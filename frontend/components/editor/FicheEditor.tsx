@@ -7,7 +7,7 @@ import type { Domaine } from "@/lib/types";
 import { Button, Field, Input, Segmented, Select, Textarea } from "../ui/basics";
 
 export type FicheValues = {
-  cas_usage: string; domaine_id: number; type_detection: string; gravite: string; logs_a_collecter: string; logique: string;
+  cas_usage: string; domaine_id: number; type_detection: string; gravite: string; detections_similaires: string; logs_a_collecter: string; logique: string;
   exclusions: string; recommandation: string; impact: string; params: Record<string, string | number>; notes?: string;
   listes_reference?: Record<string, string[]>;
 };
@@ -61,6 +61,7 @@ export default function FicheEditor({ initial, versionKey, domaines, editable, k
           <Field label="Domaine" className="min-w-56"><Select disabled={!editable} value={v.domaine_id} onChange={(e) => set("domaine_id", Number(e.target.value))}>{domaines.map((d) => <option key={d.id} value={d.id}>{d.nom}</option>)}</Select></Field>
           <Field label="Gravité" group><Segmented size="sm" value={v.gravite} onChange={(g) => editable && set("gravite", g)} options={GRAVITES.map((g) => ({ value: g, label: g, color: `var(--sev-${g.toLowerCase()})` }))} /></Field>
           <Field label="Type" group><Segmented size="sm" value={v.type_detection} onChange={(g) => editable && set("type_detection", g)} options={TYPES.map((g) => ({ value: g, label: g }))} /></Field>
+          <Field label="Détections similaires" className="min-w-64 flex-1"><Input disabled={!editable} value={v.detections_similaires} onChange={(e) => set("detections_similaires", e.target.value)} maxLength={500} placeholder="Ex. DET-012, DET-031" /></Field>
         </div>
         <div className="grid gap-5 lg:grid-cols-2">
           <Field label="Logs à collecter"><Textarea disabled={!editable} rows={5} value={v.logs_a_collecter} onChange={(e) => set("logs_a_collecter", e.target.value)} /></Field>

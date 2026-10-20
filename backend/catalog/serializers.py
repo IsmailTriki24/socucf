@@ -81,6 +81,7 @@ class ContenuWriteSerializer(serializers.Serializer):
     type_detection = serializers.ChoiceField(choices=["Simple", "Seuil", "Corrélation"], required=False)
     gravite = serializers.ChoiceField(choices=["Critique", "Haute", "Moyenne", "Basse"], required=False)
     domaine_id = serializers.IntegerField(required=False)
+    detections_similaires = serializers.CharField(allow_blank=True, max_length=500, required=False)
     logs_a_collecter = serializers.CharField(allow_blank=True, required=False)
     logique = serializers.CharField(allow_blank=True, required=False)
     exclusions = serializers.CharField(allow_blank=True, required=False)
@@ -96,7 +97,7 @@ def template_payload(t: Template, *, with_rules: bool = True) -> dict:
     out = {
         "code": t.code, "domaine": t.domaine.nom, "domaine_id": t.domaine_id,
         "cas_usage": t.cas_usage, "type_detection": t.type_detection, "gravite": t.gravite,
-        "logs_a_collecter": t.logs_a_collecter, "logique": t.logique, "parametres_defaut": t.parametres_defaut,
+        "detections_similaires": t.detections_similaires, "logs_a_collecter": t.logs_a_collecter, "logique": t.logique, "parametres_defaut": t.parametres_defaut,
         "exclusions": t.exclusions, "recommandation": t.recommandation, "impact": t.impact,
         "sources": [{"source_id": ts.source_id, "nom": ts.source.nom, "obligatoire": ts.obligatoire,
                      "a_activer": ts.source.a_activer, "evenements_cles": ts.source.evenements_cles, "piege": ts.source.piege}

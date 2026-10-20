@@ -88,7 +88,7 @@ def instancier(client: Client, template: Template, user, *, collectees: set[int]
         raise ValidationError(f"{template.code} est déjà dans les détections de ce client.")
     d = DetectionClient.objects.create(
         client=client, template=template, code=template.code, domaine=template.domaine, cas_usage=template.cas_usage,
-        type_detection=template.type_detection, gravite=template.gravite, logs_a_collecter=template.logs_a_collecter,
+        type_detection=template.type_detection, gravite=template.gravite, detections_similaires=template.detections_similaires, logs_a_collecter=template.logs_a_collecter,
         logique=template.logique, parametres=dict(template.parametres_defaut or {}), exclusions=template.exclusions,
         recommandation=template.recommandation, impact=template.impact, statut=StatutDetection.BROUILLON,
         proprietaire=user, modifie_par=user, modifie_le=timezone.now(),
@@ -147,7 +147,7 @@ def reinitialiser(detection: DetectionClient, user, *, regles: bool = True) -> D
     t = detection.template
     if t is None:
         raise ValidationError("Cette détection n'a pas de template d'origine.")
-    for f in ("domaine", "cas_usage", "type_detection", "gravite", "logs_a_collecter", "logique", "exclusions", "recommandation", "impact"):
+    for f in ("domaine", "cas_usage", "type_detection", "gravite", "detections_similaires", "logs_a_collecter", "logique", "exclusions", "recommandation", "impact"):
         setattr(detection, f, getattr(t, f))
     detection.parametres = dict(t.parametres_defaut or {})
     detection.modifie_par, detection.modifie_le = user, timezone.now()

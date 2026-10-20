@@ -149,7 +149,7 @@ def detection_payload(d: DetectionClient, user) -> dict:
         "template_code": d.template.code if d.template else None,
         "domaine": d.domaine.nom, "domaine_id": d.domaine_id, "cas_usage": d.cas_usage, "type_detection": d.type_detection,
         "gravite": d.gravite, "statut": d.statut, "journalisation": d.journalisation,
-        "logs_a_collecter": d.logs_a_collecter, "logique": d.logique, "exclusions": d.exclusions,
+        "detections_similaires": d.detections_similaires, "logs_a_collecter": d.logs_a_collecter, "logique": d.logique, "exclusions": d.exclusions,
         "recommandation": d.recommandation, "impact": d.impact, "notes": d.notes,
         "parametres": d.parametres, "parametres_effectifs": valeurs, "listes_reference": d.listes_reference,
         "parametres_template": d.template.parametres_defaut if d.template else {},

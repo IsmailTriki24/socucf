@@ -136,6 +136,7 @@ class Template(models.Model):
     cas_usage = models.CharField(max_length=300)
     type_detection = models.CharField(max_length=15, choices=TypeDetection.choices, default=TypeDetection.SIMPLE)
     gravite = models.CharField(max_length=10, choices=Gravite.choices, default=Gravite.MOYENNE)
+    detections_similaires = models.CharField(max_length=500, blank=True)
     logs_a_collecter = models.TextField(blank=True)
     logique = models.TextField(blank=True)
     # {"seuil": 8, "fenetre": "10m", ...} : valeurs de départ des paramètres {{nom}} des règles

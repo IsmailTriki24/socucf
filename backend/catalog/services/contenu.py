@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 
 from ..models import Domaine, SourceLog, TechniqueMitre
 
-TEXT_FIELDS = ("cas_usage", "type_detection", "gravite", "logs_a_collecter", "logique", "exclusions", "recommandation", "impact")
+TEXT_FIELDS = ("cas_usage", "type_detection", "gravite", "detections_similaires", "logs_a_collecter", "logique", "exclusions", "recommandation", "impact")
 PARAM_NAME = re.compile(r"[a-zA-Z_][a-zA-Z0-9_]*")
 
 

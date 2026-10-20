@@ -53,7 +53,7 @@ function Detection({ id, did }: { id: string; did: string }) {
   const fail = (e: unknown) => toast.error(errMsg(e));
 
   const ficheInitial: FicheValues = {
-    cas_usage: d.cas_usage, domaine_id: d.domaine_id, type_detection: d.type_detection, gravite: d.gravite, logs_a_collecter: d.logs_a_collecter,
+    cas_usage: d.cas_usage, domaine_id: d.domaine_id, type_detection: d.type_detection, gravite: d.gravite, detections_similaires: d.detections_similaires, logs_a_collecter: d.logs_a_collecter,
     logique: d.logique, exclusions: d.exclusions, recommandation: d.recommandation, impact: d.impact, params: d.parametres, notes: d.notes, listes_reference: d.listes_reference,
   };
 
@@ -88,7 +88,7 @@ function Detection({ id, did }: { id: string; did: string }) {
 
           {tab === "fiche" && (
             <FicheEditor kind="detection" editable={editable} domaines={domaines.data ?? []} initial={ficheInitial} versionKey={`${d.id}:${d.modifie_le}`} nonResolus={nonResolus}
-              onSave={async (v) => { try { await patchD({ cas_usage: v.cas_usage, domaine_id: v.domaine_id, type_detection: v.type_detection, gravite: v.gravite, logs_a_collecter: v.logs_a_collecter, logique: v.logique, exclusions: v.exclusions, recommandation: v.recommandation, impact: v.impact, parametres: Object.fromEntries(Object.entries(v.params).map(([k, x]) => [k, x !== "" && !isNaN(Number(x)) ? Number(x) : x])), listes_reference: Object.fromEntries(Object.entries(v.listes_reference ?? {}).map(([k, l]) => [k, l.map((x) => x.trim()).filter(Boolean)])), notes: v.notes ?? "" }); toast.success("Modifications enregistrées."); } catch (e) { fail(e); throw e; } }} />
+              onSave={async (v) => { try { await patchD({ cas_usage: v.cas_usage, domaine_id: v.domaine_id, type_detection: v.type_detection, gravite: v.gravite, detections_similaires: v.detections_similaires, logs_a_collecter: v.logs_a_collecter, logique: v.logique, exclusions: v.exclusions, recommandation: v.recommandation, impact: v.impact, parametres: Object.fromEntries(Object.entries(v.params).map(([k, x]) => [k, x !== "" && !isNaN(Number(x)) ? Number(x) : x])), listes_reference: Object.fromEntries(Object.entries(v.listes_reference ?? {}).map(([k, l]) => [k, l.map((x) => x.trim()).filter(Boolean)])), notes: v.notes ?? "" }); toast.success("Modifications enregistrées."); } catch (e) { fail(e); throw e; } }} />
           )}
           {tab === "regles" && (
             <RulesEditor platforms={platforms} editable={editable} guide={guide.data ?? []}

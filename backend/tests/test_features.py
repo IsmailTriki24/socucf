@@ -78,6 +78,22 @@ def test_only_admin_deletes_client_with_name_confirmation(world):
 
 # ---------------------------------------------------------------- détections : tout est modifiable
 @pytest.mark.django_db
+def test_similar_detections_field_is_editable_and_copied(world):
+    d = get_det(world.a)
+    r = api(world.contrib).patch(f"/api/detections/{d.pk}", {"detections_similaires": "DET-002, DET-010"}, format="json")
+    assert r.status_code == 200 and r.json()["detections_similaires"] == "DET-002, DET-010"
+    assert api(world.contrib).patch(f"/api/detections/{d.pk}", {"detections_similaires": "x" * 501}, format="json").status_code == 400
+    # le template porte le même champ ; une détection créée ensuite le reprend
+    t = Template.objects.get(code="DET-001")
+    r = api(world.admin).patch("/api/templates/DET-001", {"detections_similaires": "DET-003"}, format="json")
+    assert r.status_code == 200 and r.json()["detections_similaires"] == "DET-003"
+    api(world.contrib).post(f"/api/detections/{d.pk}/reinitialiser")
+    assert api(world.contrib).get(f"/api/detections/{d.pk}").json()["detections_similaires"] == "DET-003"
+    t.refresh_from_db()
+    assert t.detections_similaires == "DET-003"
+
+
+@pytest.mark.django_db
 def test_status_is_free_and_deploy_sets_date(world):
     d = get_det(world.a)
     c = api(world.contrib)

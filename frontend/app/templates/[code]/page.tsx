@@ -45,7 +45,7 @@ function TemplatePage({ code }: { code: string }) {
   const editable = t.peut_modifier;
   const fail = (e: unknown) => toast.error(errMsg(e));
   const patchT = async (body: Record<string, unknown>) => { r.setData(await patch<TemplateFull>(`/templates/${code}`, body)); };
-  const initial: FicheValues = { cas_usage: t.cas_usage, domaine_id: t.domaine_id, type_detection: t.type_detection, gravite: t.gravite, logs_a_collecter: t.logs_a_collecter, logique: t.logique, exclusions: t.exclusions, recommandation: t.recommandation, impact: t.impact, params: t.parametres_defaut };
+  const initial: FicheValues = { cas_usage: t.cas_usage, domaine_id: t.domaine_id, type_detection: t.type_detection, gravite: t.gravite, detections_similaires: t.detections_similaires, logs_a_collecter: t.logs_a_collecter, logique: t.logique, exclusions: t.exclusions, recommandation: t.recommandation, impact: t.impact, params: t.parametres_defaut };
   const writable = clients?.filter((c) => c.permissions["detection.edit"]) ?? [];
 
   return (
@@ -87,7 +87,7 @@ function TemplatePage({ code }: { code: string }) {
       ]} />
       {tab === "fiche" && (
         <FicheEditor kind="template" editable={editable} domaines={domaines.data ?? []} initial={initial} versionKey={`${t.code}:${t.modifie_le}`} nonResolus={[]}
-          onSave={async (v) => { try { await patchT({ cas_usage: v.cas_usage, domaine_id: v.domaine_id, type_detection: v.type_detection, gravite: v.gravite, logs_a_collecter: v.logs_a_collecter, logique: v.logique, exclusions: v.exclusions, recommandation: v.recommandation, impact: v.impact, parametres_defaut: Object.fromEntries(Object.entries(v.params).map(([k, x]) => [k, x !== "" && !isNaN(Number(x)) ? Number(x) : x])) }); toast.success("Template enregistré."); } catch (e) { fail(e); throw e; } }} />
+          onSave={async (v) => { try { await patchT({ cas_usage: v.cas_usage, domaine_id: v.domaine_id, type_detection: v.type_detection, gravite: v.gravite, detections_similaires: v.detections_similaires, logs_a_collecter: v.logs_a_collecter, logique: v.logique, exclusions: v.exclusions, recommandation: v.recommandation, impact: v.impact, parametres_defaut: Object.fromEntries(Object.entries(v.params).map(([k, x]) => [k, x !== "" && !isNaN(Number(x)) ? Number(x) : x])) }); toast.success("Template enregistré."); } catch (e) { fail(e); throw e; } }} />
       )}
       {tab === "regles" && (
         <RulesEditor platforms={platforms} editable={editable} guide={guide.data ?? []}

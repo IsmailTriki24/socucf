@@ -219,7 +219,7 @@ def template_dupliquer(request, code):
     src = _get_template(code)
     nouveau = Template.objects.create(
         code=_next_code(), domaine=src.domaine, cas_usage=f"{src.cas_usage} (copie)"[:300], type_detection=src.type_detection,
-        gravite=src.gravite, logs_a_collecter=src.logs_a_collecter, logique=src.logique, parametres_defaut=dict(src.parametres_defaut or {}),
+        gravite=src.gravite, detections_similaires=src.detections_similaires, logs_a_collecter=src.logs_a_collecter, logique=src.logique, parametres_defaut=dict(src.parametres_defaut or {}),
         exclusions=src.exclusions, recommandation=src.recommandation, impact=src.impact,
     )
     nouveau.techniques.set(src.techniques.all())
