@@ -13,7 +13,7 @@ export const statutColor = (s: string) => `var(--st-${s})`;
 export const GRAVITES = ["Critique", "Haute", "Moyenne", "Basse"] as const;
 export const GRAVITE_LEVEL: Record<string, number> = { Critique: 4, Haute: 3, Moyenne: 2, Basse: 1 };
 export const graviteColor = (g: string) => `var(--sev-${g.toLowerCase()})`;
-export const TYPES = ["Simple", "Seuil", "Corrélation"] as const;
+export const TYPES = ["Unitaire", "Seuil", "Corrélation"] as const;
 
 export const ROLE_LABELS: Record<string, string> = {
   admin_plateforme: "Administrateur plateforme", responsable_catalogue: "Responsable catalogue",

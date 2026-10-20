@@ -77,7 +77,7 @@ class DetectionClient(models.Model):
     code = models.CharField(max_length=20)
     domaine = models.ForeignKey("catalog.Domaine", on_delete=models.PROTECT, related_name="detections_client")
     cas_usage = models.CharField(max_length=300)
-    type_detection = models.CharField(max_length=15, choices=TypeDetection.choices, default=TypeDetection.SIMPLE)
+    type_detection = models.CharField(max_length=15, choices=TypeDetection.choices, default=TypeDetection.UNITAIRE)
     gravite = models.CharField(max_length=10, choices=Gravite.choices, default=Gravite.MOYENNE)
     detections_similaires = models.CharField(max_length=500, blank=True)
     logs_a_collecter = models.TextField(blank=True)

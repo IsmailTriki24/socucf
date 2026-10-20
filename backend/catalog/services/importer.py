@@ -25,6 +25,7 @@ from .referentiels import ensure_siems, siem_code_from_header
 CODE_RE = re.compile(r"^DET-\d{3,}$")
 TECH_RE = re.compile(r"^T\d{4}(\.\d{3})?$")
 TYPES = {t.value for t in TypeDetection}
+ANCIENS_TYPES = {"Simple": TypeDetection.UNITAIRE.value}
 GRAVITES = {g.value for g in Gravite}
 EMPTY_MITRE = {"", "—", "-", "–"}
 
@@ -216,9 +217,9 @@ def _run(wb, report: Report, user, filename: str):
             erreurs.append(("domaine_inconnu", f"Domaine « {domaine_nom} » absent des domaines du Lisez-moi."))
         elif not domaine_nom:
             erreurs.append(("domaine_vide", "Domaine manquant."))
-        typ = _s(row[h["Type"]])
+        typ = ANCIENS_TYPES.get(_s(row[h["Type"]]), _s(row[h["Type"]]))  # « Simple » des anciens fichiers
         if typ not in TYPES:
-            erreurs.append(("type_invalide", f"Type « {typ} » invalide (Simple, Seuil ou Corrélation)."))
+            erreurs.append(("type_invalide", f"Type « {typ} » invalide (Unitaire, Seuil ou Corrélation)."))
         grav = _s(row[h["Gravité"]])
         if grav not in GRAVITES:
             erreurs.append(("gravite_invalide", f"Gravité « {grav} » invalide."))

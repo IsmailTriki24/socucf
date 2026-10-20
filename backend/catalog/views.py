@@ -332,7 +332,7 @@ def attack_impacts(request):
 @api_view(["GET"])
 def catalogue_stats(request):
     """Compteurs par domaine de la bibliothèque, recalculés en base."""
-    par_domaine = {d.nom: {"domaine_id": d.pk, "domaine": d.nom, "total": 0, "Simple": 0, "Seuil": 0, "Corrélation": 0} for d in Domaine.objects.all()}
+    par_domaine = {d.nom: {"domaine_id": d.pk, "domaine": d.nom, "total": 0, "Unitaire": 0, "Seuil": 0, "Corrélation": 0} for d in Domaine.objects.all()}
     gravite, total = Counter(), 0
     for t in Template.objects.select_related("domaine"):
         row = par_domaine[t.domaine.nom]

@@ -24,7 +24,7 @@ export default function AddDialog({ clientId, open, onOpenChange, onDone }: { cl
   const [sel, setSel] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  const [libre, setLibre] = useState({ cas_usage: "", domaine_id: 0, gravite: "Moyenne", type_detection: "Simple" });
+  const [libre, setLibre] = useState({ cas_usage: "", domaine_id: 0, gravite: "Moyenne", type_detection: "Unitaire" });
 
   const list = useMemo(() => (lib.data ?? [])
     .filter((t) => (!dom || String(t.domaine_id) === dom) && (!q || `${t.code} ${t.cas_usage}`.toLowerCase().includes(q.toLowerCase())))

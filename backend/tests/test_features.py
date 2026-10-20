@@ -307,7 +307,7 @@ def test_permission_matrix(world):
 @pytest.mark.django_db
 def test_template_library_crud_for_catalogue_managers(world):
     dom = Domaine.objects.first()
-    body = {"domaine_id": dom.pk, "cas_usage": "Nouveau cas", "gravite": "Haute", "type_detection": "Simple",
+    body = {"domaine_id": dom.pk, "cas_usage": "Nouveau cas", "gravite": "Haute", "type_detection": "Unitaire",
             "exclusions": "e", "recommandation": "r", "impact": "i", "sources": [{"source_id": SourceLog.objects.first().pk}]}
     for u in (world.lecteur, world.adminclient, world.valideur):
         assert api(u).post("/api/templates", body, format="json").status_code == 403
@@ -341,8 +341,8 @@ def test_catalogue_stats_matches_excel_counters(world):
     s = api(world.lecteur).get("/api/catalogue/stats").json()
     assert s["total"] == 82
     row = next(d for d in s["domaines"] if d["domaine"] == "Identité & AD")
-    assert (row["total"], row["Simple"], row["Seuil"], row["Corrélation"]) == (10, 3, 3, 4)  # = COUNTIFS du Lisez-moi
-    assert sum(d["Simple"] for d in s["domaines"]) == 39
+    assert (row["total"], row["Unitaire"], row["Seuil"], row["Corrélation"]) == (10, 3, 3, 4)  # = COUNTIFS du Lisez-moi
+    assert sum(d["Unitaire"] for d in s["domaines"]) == 39
     assert sum(d["Seuil"] for d in s["domaines"]) == 18
     assert sum(d["Corrélation"] for d in s["domaines"]) == 25
 

@@ -112,7 +112,7 @@ class TechniqueMitre(models.Model):
 
 
 class TypeDetection(models.TextChoices):
-    SIMPLE = "Simple", "Simple"
+    UNITAIRE = "Unitaire", "Unitaire"
     SEUIL = "Seuil", "Seuil"
     CORRELATION = "Corrélation", "Corrélation"
 
@@ -125,7 +125,7 @@ class Gravite(models.TextChoices):
 
 
 GRAVITE_ORDRE = {"Critique": 0, "Haute": 1, "Moyenne": 2, "Basse": 3}
-TYPE_ORDRE = {"Simple": 0, "Seuil": 1, "Corrélation": 2}
+TYPE_ORDRE = {"Unitaire": 0, "Seuil": 1, "Corrélation": 2}
 
 
 class Template(models.Model):
@@ -134,7 +134,7 @@ class Template(models.Model):
     code = models.CharField(max_length=20, unique=True)  # DET-001
     domaine = models.ForeignKey(Domaine, on_delete=models.PROTECT, related_name="templates")
     cas_usage = models.CharField(max_length=300)
-    type_detection = models.CharField(max_length=15, choices=TypeDetection.choices, default=TypeDetection.SIMPLE)
+    type_detection = models.CharField(max_length=15, choices=TypeDetection.choices, default=TypeDetection.UNITAIRE)
     gravite = models.CharField(max_length=10, choices=Gravite.choices, default=Gravite.MOYENNE)
     detections_similaires = models.CharField(max_length=500, blank=True)
     logs_a_collecter = models.TextField(blank=True)

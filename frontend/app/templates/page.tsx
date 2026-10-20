@@ -20,7 +20,7 @@ const list = (v: string | null) => (v ? v.split(",").filter(Boolean) : []);
 function NewTemplate({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
   const router = useRouter();
   const domaines = useAsync(() => get<Domaine[]>("/domaines"), []);
-  const [f, setF] = useState({ cas_usage: "", domaine_id: 0, gravite: "Moyenne", type_detection: "Simple" });
+  const [f, setF] = useState({ cas_usage: "", domaine_id: 0, gravite: "Moyenne", type_detection: "Unitaire" });
   const [busy, setBusy] = useState(false);
   return (
     <Modal open={open} onOpenChange={onOpenChange} title="Nouveau template" description="Un modèle de détection réutilisable. Les règles, exclusions et le reste se complètent ensuite."

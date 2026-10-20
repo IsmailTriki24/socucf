@@ -78,7 +78,7 @@ class ContenuWriteSerializer(serializers.Serializer):
     """Champs de contenu acceptés à l'écriture (template ou détection client) ; tous facultatifs."""
 
     cas_usage = serializers.CharField(max_length=300, required=False)
-    type_detection = serializers.ChoiceField(choices=["Simple", "Seuil", "Corrélation"], required=False)
+    type_detection = serializers.ChoiceField(choices=["Unitaire", "Seuil", "Corrélation"], required=False)
     gravite = serializers.ChoiceField(choices=["Critique", "Haute", "Moyenne", "Basse"], required=False)
     domaine_id = serializers.IntegerField(required=False)
     detections_similaires = serializers.CharField(allow_blank=True, max_length=500, required=False)
