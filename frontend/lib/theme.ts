@@ -7,7 +7,7 @@ export function useTheme() {
   const toggle = () => {
     const next = theme === "dark" ? "light" : "dark";
     document.documentElement.dataset.theme = next;
-    try { localStorage.setItem("socusf.theme", next); } catch { /* stockage indisponible */ }
+    try { localStorage.setItem("socucf.theme", next); } catch { /* stockage indisponible */ }
     setTheme(next);
   };
   return { theme, toggle };

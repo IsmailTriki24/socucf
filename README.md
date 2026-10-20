@@ -1,4 +1,4 @@
-# SOC USF
+# SOC UCF
 
 Application web de l'**UC Factory SOC** : une bibliothèque de templates de détection (82 au départ, issus du catalogue Excel v1.0), copiée pour chaque client, que le SOC adapte, teste et fait avancer jusqu'au déploiement dans son SIEM ou son XDR.
 

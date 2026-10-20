@@ -93,7 +93,7 @@ def client_workbook(client) -> bytes:
             ("Secteur", client.secteur),
             ("Plateformes SIEM / XDR", ", ".join(s.nom for s in client.siems.all())),
             ("Domaines retenus", ", ".join(d.nom for d in client.domaines.all())),
-            ("Export", "SOC USF – UC Factory du client (format du catalogue + colonnes client)"),
+            ("Export", "SOC UCF – UC Factory du client (format du catalogue + colonnes client)"),
             ("Paramètres", "Les paramètres {{nom}} des règles sont remplacés par les valeurs du client."),
         ],
         start=1,
@@ -128,7 +128,7 @@ def navigator_layer(client, statuts_raw: str | None = None) -> dict:
     ]
     major = settings.ATTACK_VERSION.split(".")[0]
     return {
-        "name": f"SOC USF – {client.nom}",
+        "name": f"SOC UCF – {client.nom}",
         "versions": {"attack": major, "navigator": "5.1.0", "layer": "4.5"},
         "domain": "enterprise-attack",
         "description": f"Couverture de détection de {client.nom} (statuts : {', '.join(statuts)}).",

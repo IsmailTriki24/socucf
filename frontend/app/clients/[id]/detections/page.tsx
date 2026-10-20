@@ -46,7 +46,7 @@ function Page_({ id }: { id: string }) {
   const canEdit = can("detection.edit");
   const data = useAsync(() => get<DetectionItem[]>(`/clients/${id}/detections`), [id]);
   const tactiques = useAsync(() => get<Tactique[]>("/tactiques"), []);
-  const [view, setView] = useStored<"board" | "grid">("socusf.vue", "board");
+  const [view, setView] = useStored<"board" | "grid">("socucf.vue", "board");
   const [items, setItems] = useState<DetectionItem[] | null>(null);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [adding, setAdding] = useState(false);

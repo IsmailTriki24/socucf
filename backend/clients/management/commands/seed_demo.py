@@ -18,7 +18,7 @@ class Command(BaseCommand):
         creds = []
 
         def user(username, nom, role_global=""):
-            u, created = User.objects.get_or_create(username=username, defaults={"first_name": nom, "role_global": role_global, "email": f"{username}@soc-usf.local"})
+            u, created = User.objects.get_or_create(username=username, defaults={"first_name": nom, "role_global": role_global, "email": f"{username}@soc-ucf.local"})
             if created:
                 pwd = secrets.token_urlsafe(12)
                 u.set_password(pwd)

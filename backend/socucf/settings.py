@@ -1,4 +1,4 @@
-"""Réglages Django de SOC USF."""
+"""Réglages Django de SOC UCF."""
 import os
 from pathlib import Path
 
@@ -45,7 +45,7 @@ MIDDLEWARE = [
 if not DEBUG:  # fichiers statiques de l'admin Django servis par Gunicorn derrière Nginx
     MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 
-ROOT_URLCONF = "socusf.urls"
+ROOT_URLCONF = "socucf.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -60,7 +60,7 @@ TEMPLATES = [
         },
     }
 ]
-WSGI_APPLICATION = "socusf.wsgi.application"
+WSGI_APPLICATION = "socucf.wsgi.application"
 
 # PostgreSQL en production (DATABASE_URL), SQLite en développement local.
 _db_url = os.environ.get("DATABASE_URL", "")
@@ -116,7 +116,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_PAGINATION_CLASS": None,
-    "EXCEPTION_HANDLER": "socusf.api.exception_handler",
+    "EXCEPTION_HANDLER": "socucf.api.exception_handler",
     "DEFAULT_THROTTLE_RATES": {"login": "10/min"},
 }
 

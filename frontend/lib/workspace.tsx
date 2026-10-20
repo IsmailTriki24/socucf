@@ -12,7 +12,7 @@ type Ctx = {
   remember: (id: number) => void;
 };
 const WorkspaceCtx = createContext<Ctx>({ clients: null, current: null, reload: async () => {}, remember: () => {} });
-const KEY = "socusf.client";
+const KEY = "socucf.client";
 
 export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   const { me } = useAuth();

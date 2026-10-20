@@ -9,14 +9,14 @@ import { ConfirmProvider, TooltipProvider } from "@/components/ui/overlay";
 import Shell from "@/components/Shell";
 
 export const metadata: Metadata = {
-  title: "SOC USF",
+  title: "SOC UCF",
   icons: { icon: "/favicon.svg" },
   description: "UC Factory SOC : détections par client, journalisation, règles par SIEM / XDR et couverture MITRE ATT&CK.",
 };
 export const viewport: Viewport = { themeColor: "#090e1b" };
 
 // Applique le thème enregistré avant l'affichage pour éviter un flash.
-const themeScript = `try{var t=localStorage.getItem("socusf.theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}`;
+const themeScript = `try{var t=localStorage.getItem("socucf.theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

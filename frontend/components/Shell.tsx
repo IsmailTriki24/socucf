@@ -107,7 +107,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
   const router = useRouter();
   const { theme, toggle } = useTheme();
-  const [collapsed, setCollapsed] = useStored<boolean>("socusf.rail", false);
+  const [collapsed, setCollapsed] = useStored<boolean>("socucf.rail", false);
   const [palette, setPalette] = useState(false);
   const [drawer, setDrawer] = useState(false);
   const wide = useWide();
@@ -173,9 +173,9 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       {drawer && <button aria-label="Fermer le menu" className="fixed inset-0 z-30 bg-black/50 lg:hidden" onClick={() => setDrawer(false)} />}
       <nav aria-label="Navigation principale" className={cn("fixed inset-y-0 left-0 z-40 flex shrink-0 flex-col border-r border-line-soft bg-bg-2 transition-[width,transform] duration-150 lg:static lg:translate-x-0", drawer ? "translate-x-0" : "-translate-x-full", rail ? "w-[68px]" : "w-[252px]")}>
         <div className={cn("flex h-14 items-center gap-2 px-3.5", rail && "justify-center px-0")}>
-          <Link href="/" className="flex items-center gap-2.5" aria-label="SOC USF, accueil">
+          <Link href="/" className="flex items-center gap-2.5" aria-label="SOC UCF, accueil">
             <span className="grid size-8 place-items-center rounded-lg bg-accent text-accent-ink"><Radar className="size-[18px]" strokeWidth={2.4} /></span>
-            {!rail && <span className="text-[16px] font-bold tracking-tight">SOC USF</span>}
+            {!rail && <span className="text-[16px] font-bold tracking-tight">SOC UCF</span>}
           </Link>
         </div>
         <div className="scroll-thin flex-1 overflow-y-auto px-3 pb-3">

@@ -32,7 +32,7 @@ export default function Login() {
   return (
     <div className="grid min-h-screen lg:grid-cols-[1.1fr_1fr]">
       <div className="relative hidden flex-col justify-between overflow-hidden border-r border-line-soft bg-bg-2 p-12 lg:flex">
-        <div className="flex items-center gap-2.5"><span className="grid size-9 place-items-center rounded-lg bg-accent text-accent-ink"><Radar className="size-5" strokeWidth={2.4} /></span><span className="text-lg font-bold">SOC USF</span></div>
+        <div className="flex items-center gap-2.5"><span className="grid size-9 place-items-center rounded-lg bg-accent text-accent-ink"><Radar className="size-5" strokeWidth={2.4} /></span><span className="text-lg font-bold">SOC UCF</span></div>
         <div className="max-w-lg">
           <h1 className="text-[44px] leading-[1.05]">Chaque détection du client, de l&apos;idée au déploiement.</h1>
           <p className="mt-4 text-[16px] text-fg-3">Règles par SIEM et XDR, journalisation, exclusions, couverture MITRE ATT&CK : un seul espace par client.</p>

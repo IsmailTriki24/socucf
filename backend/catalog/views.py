@@ -377,5 +377,5 @@ def catalogue_export(request):
 
     data = catalogue_workbook()
     resp = HttpResponse(data, content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    resp["Content-Disposition"] = 'attachment; filename="catalogue_detection_soc_usf.xlsx"'
+    resp["Content-Disposition"] = 'attachment; filename="catalogue_detection_soc_ucf.xlsx"'
     return resp
