@@ -4,25 +4,27 @@ import { cn } from "@/lib/cn";
 
 const FUR = "#7584f2", FUR_DARK = "#4553c9", FUR_LIGHT = "#e3e7ff", PINK = "#ff9ec4", INK = "#0f1533", GEAR = "#1c2650";
 
-const VB_W = 480, VB_H = 340, EYES = { x: 240, y: 116 }, REACH = { x: 5, y: 4 }, FULL_AT = 260;
+const VB_W = 480, VB_H = 340, EYES = { x: 240, y: 116 }, FULL_AT = 260;
 
 /** Un chat cyber tout doux : il veille derrière son portable pendant que le radar balaie. Animations CSS dans globals.css (.cc-*). */
 export function CyberCat({ className }: { className?: string }) {
   const id = useId().replace(/:/g, "");
-  const svg = useRef<SVGSVGElement>(null), look = useRef<SVGGElement>(null);
+  const svg = useRef<SVGSVGElement>(null);
 
-  // Les yeux suivent le pointeur ; hors de la fenêtre (ou si l'utilisateur limite les animations), le regard libre prend le relais.
+  // La tête se tourne vers le pointeur (--lx/--ly, de -1 à 1, lus par les couches .cc-rig/.cc-f1/.cc-f2/.cc-look) ;
+  // hors de la fenêtre (ou si l'utilisateur limite les animations), le regard libre prend le relais.
   useEffect(() => {
-    const root = svg.current, eyes = look.current;
-    if (!root || !eyes || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const idle = () => { root.removeAttribute("data-follow"); eyes.style.transform = ""; };
+    const root = svg.current;
+    if (!root || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const idle = () => { root.removeAttribute("data-follow"); root.style.removeProperty("--lx"); root.style.removeProperty("--ly"); };
     const move = (e: PointerEvent) => {
       const r = root.getBoundingClientRect(), s = Math.min(r.width / VB_W, r.height / VB_H);
       if (!s) return;
       const dx = e.clientX - (r.left + (r.width - VB_W * s) / 2 + EYES.x * s), dy = e.clientY - (r.top + (r.height - VB_H * s) / 2 + EYES.y * s);
       const d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / FULL_AT);
       root.setAttribute("data-follow", "");
-      eyes.style.transform = `translate(${((dx / d) * k * REACH.x).toFixed(2)}px, ${((dy / d) * k * REACH.y).toFixed(2)}px)`;
+      root.style.setProperty("--lx", ((dx / d) * k).toFixed(3));
+      root.style.setProperty("--ly", ((dy / d) * k).toFixed(3));
     };
     window.addEventListener("pointermove", move, { passive: true });
     document.documentElement.addEventListener("pointerleave", idle);
@@ -84,22 +86,23 @@ export function CyberCat({ className }: { className?: string }) {
         <circle cx="428" cy="188" r="8" fill={FUR_LIGHT} stroke="none" />
       </g>
 
-      {/* Oreilles */}
-      <g strokeLinejoin="round">
-        <g className="cc-ear-l"><polygon points="168,96 158,44 214,72" fill={FUR} stroke={FUR} strokeWidth="10" /><polygon points="172,84 168,58 196,74" fill={PINK} stroke={PINK} strokeWidth="4" /></g>
-        <g className="cc-ear-r"><polygon points="312,96 322,44 266,72" fill={FUR} stroke={FUR} strokeWidth="10" /><polygon points="308,84 312,58 284,74" fill={PINK} stroke={PINK} strokeWidth="4" /></g>
+      {/* Tête : le tout pivote autour du cou, puis chaque couche glisse un peu plus loin que la précédente (parallaxe) */}
+      <g className="cc-rig">
+      <g className="cc-f1">
+        <g strokeLinejoin="round">
+          <g className="cc-ear-l"><polygon points="168,96 158,44 214,72" fill={FUR} stroke={FUR} strokeWidth="10" /><polygon points="172,84 168,58 196,74" fill={PINK} stroke={PINK} strokeWidth="4" /></g>
+          <g className="cc-ear-r"><polygon points="312,96 322,44 266,72" fill={FUR} stroke={FUR} strokeWidth="10" /><polygon points="308,84 312,58 284,74" fill={PINK} stroke={PINK} strokeWidth="4" /></g>
+        </g>
+        <ellipse cx="240" cy="125" rx="78" ry="60" fill={`url(#${id}f)`} />
+        <path d="M232 70v10M240 67v14M248 70v10" stroke={FUR_DARK} strokeWidth="4" strokeLinecap="round" opacity=".8" />
       </g>
-
-      {/* Tête */}
-      <ellipse cx="240" cy="125" rx="78" ry="60" fill={`url(#${id}f)`} />
-      <path d="M232 70v10M240 67v14M248 70v10" stroke={FUR_DARK} strokeWidth="4" strokeLinecap="round" opacity=".8" />
-      <ellipse cx="240" cy="147" rx="27" ry="17" fill={FUR_LIGHT} />
-      <ellipse cx="188" cy="140" rx="11" ry="7" fill="#ff8fb8" opacity=".5" /><ellipse cx="292" cy="140" rx="11" ry="7" fill="#ff8fb8" opacity=".5" />
-
-      {/* Moustaches */}
-      <g stroke="var(--fg-2)" strokeWidth="2" strokeLinecap="round" opacity=".7">
-        <g className="cc-whisk-l"><path d="M202 140L146 130M202 147L144 148M202 154L148 166" /></g>
-        <g className="cc-whisk-r"><path d="M278 140L334 130M278 147L336 148M278 154L332 166" /></g>
+      <g className="cc-f2">
+        <ellipse cx="240" cy="147" rx="27" ry="17" fill={FUR_LIGHT} />
+        <ellipse cx="188" cy="140" rx="11" ry="7" fill="#ff8fb8" opacity=".5" /><ellipse cx="292" cy="140" rx="11" ry="7" fill="#ff8fb8" opacity=".5" />
+        <g stroke="var(--fg-2)" strokeWidth="2" strokeLinecap="round" opacity=".7">
+          <g className="cc-whisk-l"><path d="M202 140L146 130M202 147L144 148M202 154L148 166" /></g>
+          <g className="cc-whisk-r"><path d="M278 140L334 130M278 147L336 148M278 154L332 166" /></g>
+        </g>
       </g>
 
       {/* Casque-micro */}
@@ -109,9 +112,12 @@ export function CyberCat({ className }: { className?: string }) {
       {[165, 315].map((x) => <circle key={x} className="cc-led" cx={x} cy="125" r="3.5" fill="var(--info)" />)}
 
       {/* Visage */}
-      <g ref={look} className="cc-look">{eye(207)}{eye(273)}</g>
-      <path d="M233 134Q240 131 247 134Q244 142 240 143Q236 142 233 134Z" fill="#ff7fb0" stroke="#ff7fb0" strokeWidth="2" strokeLinejoin="round" />
-      <path d="M240 143v5M240 148q-6 7-12 2M240 148q6 7 12 2" fill="none" stroke="#3b2a63" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+      <g className="cc-look">{eye(207)}{eye(273)}</g>
+      <g className="cc-f2">
+        <path d="M233 134Q240 131 247 134Q244 142 240 143Q236 142 233 134Z" fill="#ff7fb0" stroke="#ff7fb0" strokeWidth="2" strokeLinejoin="round" />
+        <path d="M240 143v5M240 148q-6 7-12 2M240 148q6 7 12 2" fill="none" stroke="#3b2a63" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+      </g>
+      </g>
 
       {/* Portable : on le voit de dos, avec son bouclier */}
       <rect x="100" y="172" width="280" height="130" rx="14" fill="var(--panel-2)" stroke="var(--line)" strokeWidth="2.5" />

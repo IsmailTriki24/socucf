@@ -108,7 +108,10 @@
 .cc .cc-ear-r { transform-origin: 40% 90%; animation: cc-ear-r 7.5s ease-in-out -2.5s infinite; }
 .cc .cc-eye { animation: cc-blink 5s ease-in-out infinite; }
 .cc .cc-look { animation: cc-look 11s ease-in-out infinite; }
-.cc[data-follow] .cc-look { animation: none; transition: transform .14s ease-out; }
+.cc .cc-rig { transform-box: view-box; transform-origin: 240px 172px; transform: rotate(calc(var(--lx, 0) * 2.5deg)); transition: transform .2s ease-out; }
+.cc .cc-f1 { transform: translate(calc(var(--lx, 0) * 1.5px), calc(var(--ly, 0) * 1px)); transition: transform .2s ease-out; }
+.cc .cc-f2 { transform: translate(calc(var(--lx, 0) * 4px), calc(var(--ly, 0) * 2.5px)); transition: transform .2s ease-out; }
+.cc[data-follow] .cc-look { animation: none; transform: translate(calc(var(--lx, 0) * 6px), calc(var(--ly, 0) * 4.5px)); transition: transform .14s ease-out; }
 .cc .cc-whisk-l { transform-origin: 100% 50%; animation: cc-whisk 4.5s ease-in-out infinite; }
 .cc .cc-whisk-r { transform-origin: 0% 50%; animation: cc-whisk 4.5s ease-in-out -0.4s infinite reverse; }
 .cc .cc-paw-l { animation: cc-tap 4.5s ease-in-out infinite; }
