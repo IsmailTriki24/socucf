@@ -1,0 +1,65 @@
+# SOC USF : Nginx (TLS) -> Next.js + Django (Gunicorn) -> PostgreSQL.
+# Démarrage : cp .env.example .env && (éditer .env) && ./scripts/make-dev-certs.sh && docker compose up -d --build
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: socusf
+      POSTGRES_USER: socusf
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?définir POSTGRES_PASSWORD dans .env}
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U socusf"]
+      interval: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      db: { condition: service_healthy }
+    environment:
+      DJANGO_DEBUG: "0"
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?définir DJANGO_SECRET_KEY dans .env}
+      DJANGO_ALLOWED_HOSTS: ${PUBLIC_HOST:-localhost}
+      DJANGO_CSRF_TRUSTED_ORIGINS: https://${PUBLIC_HOST:-localhost}${PUBLIC_PORT_SUFFIX:-}
+      DATABASE_URL: postgres://socusf:${POSTGRES_PASSWORD}@db:5432/socusf
+      DJANGO_MEDIA_ROOT: /app/media
+      OIDC_RP_CLIENT_ID: ${OIDC_RP_CLIENT_ID:-}
+      OIDC_RP_CLIENT_SECRET: ${OIDC_RP_CLIENT_SECRET:-}
+      OIDC_OP_AUTHORIZATION_ENDPOINT: ${OIDC_OP_AUTHORIZATION_ENDPOINT:-}
+      OIDC_OP_TOKEN_ENDPOINT: ${OIDC_OP_TOKEN_ENDPOINT:-}
+      OIDC_OP_USER_ENDPOINT: ${OIDC_OP_USER_ENDPOINT:-}
+      OIDC_OP_JWKS_ENDPOINT: ${OIDC_OP_JWKS_ENDPOINT:-}
+    volumes: [media:/app/media]
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on: [backend]
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on: [frontend, backend]
+    ports: ["${HTTP_PORT:-80}:80", "${HTTPS_PORT:-443}:443"]
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+
+  # Sauvegarde quotidienne de la base (conservée 14 jours dans ./backups).
+  backup:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    depends_on:
+      db: { condition: service_healthy }
+    environment: { PGPASSWORD: "${POSTGRES_PASSWORD}" }
+    volumes: [./backups:/backups]
+    command: >
+      sh -c 'while true; do pg_dump -h db -U socusf socusf | gzip > /backups/socusf-$$(date +%F).sql.gz;
+      find /backups -name "socusf-*.sql.gz" -mtime +14 -delete; sleep 86400; done'
+
+volumes:
+  pgdata:
+  media:

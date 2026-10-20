@@ -1,0 +1,10 @@
+Django==5.2.18
+djangorestframework==3.18.3
+gunicorn==26.2.0
+openpyxl==3.1.5
+psycopg==3.3.6
+psycopg-binary==3.3.6
+pytest==9.1.1
+pytest-django==4.14.0
+mozilla-django-oidc==5.0.2
+whitenoise==6.12.0
