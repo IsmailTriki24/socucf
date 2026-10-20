@@ -5,11 +5,8 @@ import { Radar } from "lucide-react";
 import { post } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { errMsg } from "@/lib/hooks";
-import { STATUTS } from "@/lib/status";
 import { Button, Field, Input, Notice } from "@/components/ui/basics";
-import { ReadinessStrip } from "@/components/domain/marks";
-
-const DEMO = Array.from({ length: 64 }, (_, i) => ({ statut: STATUTS[Math.min(4, Math.floor(((i * 7919) % 100) / 22))].id }));
+import { CyberCat } from "@/components/domain/CyberCat";
 
 export default function Login() {
   const { refresh, oidc } = useAuth();
@@ -33,10 +30,12 @@ export default function Login() {
     <div className="grid min-h-screen lg:grid-cols-[1.1fr_1fr]">
       <div className="relative hidden flex-col justify-between overflow-hidden border-r border-line-soft bg-bg-2 p-12 lg:flex">
         <div className="flex items-center gap-2.5"><span className="grid size-9 place-items-center rounded-lg bg-accent text-accent-ink"><Radar className="size-5" strokeWidth={2.4} /></span><span className="text-lg font-bold">SOC UCF</span></div>
-        <div className="max-w-lg">
-          <h1 className="text-[44px] leading-[1.05]">Chaque détection du client, de l&apos;idée au déploiement.</h1>
-          <p className="mt-4 text-[16px] text-fg-3">Règles par SIEM et XDR, journalisation, exclusions, couverture MITRE ATT&CK : un seul espace par client.</p>
-          <div className="mt-10"><ReadinessStrip items={DEMO} height={34} /></div>
+        <div>
+          <div className="mx-auto max-w-2xl text-center">
+            <h1 className="text-balance text-[clamp(40px,3.3vw,52px)] leading-[1.05]">Chaque détection du client, de l&apos;idée au déploiement.</h1>
+            <p className="mt-5 text-balance text-[20px] leading-snug text-fg-3">Règles par SIEM et XDR, journalisation, exclusions, couverture MITRE ATT&CK : un seul espace par client.</p>
+          </div>
+          <CyberCat className="mx-auto mt-6 h-auto max-h-[44vh] w-full max-w-lg" />
         </div>
         <p className="text-[13px] text-fg-3">UC Factory SOC</p>
       </div>
