@@ -7,9 +7,9 @@ const FUR = "#7584f2", FUR_DARK = "#4553c9", FUR_LIGHT = "#e3e7ff", PINK = "#ff9
 const VB_W = 480, VB_H = 340, EYES = { x: 240, y: 116 }, FULL_AT = 260;
 
 /** Un chat cyber tout doux : il veille derrière son portable pendant que le radar balaie. Animations CSS dans globals.css (.cc-*). */
-export function CyberCat({ className }: { className?: string }) {
+export function CyberCat({ className, covering }: { className?: string; covering?: boolean }) {
   const id = useId().replace(/:/g, "");
-  const svg = useRef<SVGSVGElement>(null);
+  const svg = useRef<SVGSVGElement>(null), hidden = useRef(false);
 
   // La tête se tourne vers le pointeur (--lx/--ly, de -1 à 1, lus par les couches .cc-rig/.cc-f1/.cc-f2/.cc-look) ;
   // hors de la fenêtre (ou si l'utilisateur limite les animations), le regard libre prend le relais.
@@ -18,6 +18,7 @@ export function CyberCat({ className }: { className?: string }) {
     if (!root || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const idle = () => { root.removeAttribute("data-follow"); root.style.removeProperty("--lx"); root.style.removeProperty("--ly"); };
     const move = (e: PointerEvent) => {
+      if (hidden.current) return;
       const r = root.getBoundingClientRect(), s = Math.min(r.width / VB_W, r.height / VB_H);
       if (!s) return;
       const dx = e.clientX - (r.left + (r.width - VB_W * s) / 2 + EYES.x * s), dy = e.clientY - (r.top + (r.height - VB_H * s) / 2 + EYES.y * s);
@@ -31,6 +32,12 @@ export function CyberCat({ className }: { className?: string }) {
     return () => { window.removeEventListener("pointermove", move); document.documentElement.removeEventListener("pointerleave", idle); };
   }, []);
 
+  // Pattes sur les yeux : la tête se redresse pour qu'elles couvrent bien le regard.
+  useEffect(() => {
+    hidden.current = !!covering;
+    if (covering) { svg.current?.style.setProperty("--lx", "0"); svg.current?.style.setProperty("--ly", "0"); }
+  }, [covering]);
+
   const eye = (cx: number) => (
     <g transform={`translate(${cx} 116)`}>
       <g className="cc-eye">
@@ -42,7 +49,7 @@ export function CyberCat({ className }: { className?: string }) {
     </g>
   );
   return (
-    <svg ref={svg} viewBox={`0 0 ${VB_W} ${VB_H}`} role="img" aria-label="Illustration : un chat de la cybersécurité qui veille derrière son ordinateur portable" className={cn("cc", className)} preserveAspectRatio="xMidYMid meet">
+    <svg ref={svg} data-cover={covering ? "" : undefined} viewBox={`0 0 ${VB_W} ${VB_H}`} role="img" aria-label="Illustration : un chat de la cybersécurité qui veille derrière son ordinateur portable" className={cn("cc", className)} preserveAspectRatio="xMidYMid meet">
       <defs>
         <radialGradient id={`${id}g`}><stop offset="0" stopColor="var(--accent)" stopOpacity=".3" /><stop offset="1" stopColor="var(--accent)" stopOpacity="0" /></radialGradient>
         <linearGradient id={`${id}f`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#8e9bff" /><stop offset="1" stopColor={FUR} /></linearGradient>
@@ -119,6 +126,9 @@ export function CyberCat({ className }: { className?: string }) {
       </g>
       </g>
 
+      {/* Bras : ils sortent de derrière le portable */}
+      {[[200, "l"], [280, "r"]].map(([x, c]) => <rect key={c} className={`cc-hand cc-hand-${c}`} x={(x as number) - 13} y="174" width="26" height="90" rx="13" fill={FUR} stroke={FUR_DARK} strokeWidth="2" />)}
+
       {/* Portable : on le voit de dos, avec son bouclier */}
       <rect x="100" y="172" width="280" height="130" rx="14" fill="var(--panel-2)" stroke="var(--line)" strokeWidth="2.5" />
       <g className="cc-shield">
@@ -132,11 +142,15 @@ export function CyberCat({ className }: { className?: string }) {
       <rect x="84" y="300" width="312" height="12" rx="6" fill="var(--panel-3)" stroke="var(--line)" strokeWidth="2" />
       <ellipse cx="240" cy="324" rx="150" ry="6" fill="#000" opacity=".14" />
 
-      {/* Pattes qui tapent sur le capot */}
-      {[[200, "cc-paw-l"], [280, "cc-paw-r"]].map(([x, c]) => (
-        <g key={c as string} className={c as string}>
-          <ellipse cx={x as number} cy="174" rx="21" ry="14" fill={FUR} stroke={FUR_DARK} strokeWidth="2" />
-          <path d={`M${(x as number) - 6} 171v5M${x} 170v6M${(x as number) + 6} 171v5`} stroke={FUR_DARK} strokeWidth="2" strokeLinecap="round" opacity=".7" />
+      {/* Pattes : elles tapent sur le capot, ou couvrent les yeux quand on saisit le mot de passe */}
+      {[[200, "l"], [280, "r"]].map(([x, c]) => (
+        <g key={c} className={`cc-hand cc-hand-${c}`}>
+          <g className={`cc-paw-${c}`}>
+            <g className="cc-palm">
+              <ellipse cx={x as number} cy="174" rx="21" ry="14" fill={FUR} stroke={FUR_DARK} strokeWidth="2" />
+              <path d={`M${(x as number) - 6} 171v5M${x} 170v6M${(x as number) + 6} 171v5`} stroke={FUR_DARK} strokeWidth="2" strokeLinecap="round" opacity=".7" />
+            </g>
+          </g>
         </g>
       ))}
     </svg>

@@ -15,6 +15,7 @@ export default function Login() {
   const [password, setP] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [hiding, setHiding] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -35,7 +36,7 @@ export default function Login() {
             <h1 className="text-balance text-[clamp(40px,3.3vw,52px)] leading-[1.05]">Chaque détection du client, de l&apos;idée au déploiement.</h1>
             <p className="mt-5 text-balance text-[20px] leading-snug text-fg-3">Règles par SIEM et XDR, journalisation, exclusions, couverture MITRE ATT&CK : un seul espace par client.</p>
           </div>
-          <CyberCat className="mx-auto mt-6 h-auto max-h-[44vh] w-full max-w-lg" />
+          <CyberCat covering={hiding} className="mx-auto mt-6 h-auto max-h-[44vh] w-full max-w-lg" />
         </div>
         <p className="text-[13px] text-fg-3">UC Factory SOC</p>
       </div>
@@ -45,7 +46,7 @@ export default function Login() {
           {err && <Notice kind="err">{err}</Notice>}
           {oidc && <a className="inline-flex h-11 items-center justify-center rounded-md bg-accent font-semibold text-accent-ink hover:bg-accent-hover" href="/api/oidc/authenticate/">Se connecter avec le SSO</a>}
           <Field label={oidc ? "Compte de secours (Administrateur plateforme)" : "Identifiant"}><Input value={username} onChange={(e) => setU(e.target.value)} autoComplete="username" required autoFocus className="h-11" /></Field>
-          <Field label="Mot de passe"><Input type="password" value={password} onChange={(e) => setP(e.target.value)} autoComplete="current-password" required className="h-11" /></Field>
+          <Field label="Mot de passe"><Input type="password" value={password} onChange={(e) => setP(e.target.value)} onFocus={() => setHiding(true)} onBlur={() => setHiding(false)} autoComplete="current-password" required className="h-11" /></Field>
           <Button variant="primary" size="lg" loading={busy}>Se connecter</Button>
         </form>
       </div>

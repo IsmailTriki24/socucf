@@ -116,6 +116,12 @@
 .cc .cc-whisk-r { transform-origin: 0% 50%; animation: cc-whisk 4.5s ease-in-out -0.4s infinite reverse; }
 .cc .cc-paw-l { animation: cc-tap 4.5s ease-in-out infinite; }
 .cc .cc-paw-r { animation: cc-tap 4.5s ease-in-out .15s infinite; }
+.cc .cc-hand, .cc .cc-palm { transition: transform .4s cubic-bezier(.34, 1.45, .64, 1); }
+.cc .cc-hand-r { transition-delay: .06s; }
+.cc[data-cover] .cc-hand-l { transform: translate(9px, -58px); }
+.cc[data-cover] .cc-hand-r { transform: translate(-9px, -58px); }
+.cc[data-cover] .cc-palm { transform: scale(1.15, 1.5); }
+.cc[data-cover] .cc-paw-l, .cc[data-cover] .cc-paw-r { animation: none; }
 .cc .cc-shield { filter: drop-shadow(0 0 7px var(--accent)); animation: cc-glow 2.8s ease-in-out infinite; }
 .cc .cc-check { stroke-dasharray: 1; animation: cc-check 4s ease-in-out infinite; }
 .cc .cc-led { animation: cc-led 1.6s ease-in-out infinite; }
