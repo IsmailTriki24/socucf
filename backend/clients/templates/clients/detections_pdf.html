@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>{% if seule %}{{ fiches.0.obj.code }} · {% endif %}Détections · {{ client.nom }}</title>
+<style>
+@font-face { font-family: "Grotesk"; src: url("{{ assets }}/fonts/schibsted-grotesk-latin-wght-normal.woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Grotesk"; src: url("{{ assets }}/fonts/schibsted-grotesk-latin-ext-wght-normal.woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Mono"; src: url("{{ assets }}/fonts/jetbrains-mono-latin-wght-normal.woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Mono"; src: url("{{ assets }}/fonts/jetbrains-mono-latin-ext-wght-normal.woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+
+:root {
+  --ink: #111a36; --ink-2: #435080; --ink-3: #66749b; --line: #d8dfee; --line-soft: #e8ecf5;
+  --panel: #f4f6fb; --navy: #0b1224; --navy-2: #131d36; --accent: #3550e0; --teal: #2dd4bf;
+}
+
+@page {
+  size: A4; margin: 21mm 17mm 20mm 17mm;
+  @top-left { content: {{ css.entete }}; font: 500 7.5pt "Grotesk", sans-serif; color: #66749b; vertical-align: bottom; padding-bottom: 3mm; }
+  @top-right { content: string(code); font: 500 7.5pt "Mono", monospace; color: #66749b; vertical-align: bottom; padding-bottom: 3mm; }
+  @bottom-left { content: {{ css.pied }}; font: 400 7pt "Grotesk", sans-serif; color: #8a96b8; vertical-align: top; padding-top: 3mm; }
+  @bottom-right { content: counter(page) " / " counter(pages); font: 500 7.5pt "Grotesk", sans-serif; color: #435080; vertical-align: top; padding-top: 3mm; }
+}
+{% if seule %}@page :first { @top-left { content: none; } @top-right { content: none; } }{% endif %}
+@page couverture { margin: 0; @top-left { content: none; } @top-right { content: none; } @bottom-left { content: none; } @bottom-right { content: none; } }
+
+* { box-sizing: border-box; }
+html { font-family: "Grotesk", "DejaVu Sans", sans-serif; font-size: 9pt; line-height: 1.5; color: var(--ink); }
+body { margin: 0; }
+h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; }
+p { margin: 0; }
+.mono, code, pre { font-family: "Mono", "DejaVu Sans Mono", monospace; }
+.muted { color: var(--ink-3); }
+.texte { white-space: pre-line; overflow-wrap: break-word; }
+
+/* ------------------------------------------------------------------ couverture */
+.couverture { page: couverture; height: 297mm; background: var(--navy); color: #e9eefc; position: relative; padding: 24mm 22mm; }
+.marque { display: table; }
+.marque > svg, .marque > div { display: table-cell; vertical-align: middle; }
+.marque > div { padding-left: 3.5mm; white-space: nowrap; }
+.marque svg { width: 11mm; height: 11mm; }
+.marque b { display: block; font-size: 13pt; font-weight: 700; letter-spacing: 0.01em; }
+.marque span { display: block; font-size: 8.5pt; color: #8290b4; }
+.couverture .titre { position: absolute; left: 22mm; right: 22mm; top: 92mm; }
+.kicker { font-size: 10.5pt; font-weight: 600; color: var(--teal); }
+.couverture h1 { font-size: 36pt; font-weight: 700; margin-top: 4mm; color: #fff; letter-spacing: -0.02em; }
+.couverture .secteur { margin-top: 3mm; font-size: 12pt; color: #b2bedc; }
+.spectre { display: flex; height: 3mm; margin-top: 13mm; border-radius: 1.5mm; overflow: hidden; background: #26355c; }
+.spectre span { display: block; height: 100%; }
+.legende-spectre { margin-top: 3.5mm; font-size: 8pt; color: #b2bedc; }
+.legende-spectre span { margin-right: 5mm; white-space: nowrap; }
+.legende-spectre i { display: inline-block; width: 2mm; height: 2mm; border-radius: 50%; margin-right: 1.4mm; vertical-align: 0.2mm; }
+.couverture .couv-meta { position: absolute; left: 22mm; right: 22mm; bottom: 22mm; border-top: 0.3mm solid #26355c; padding-top: 7mm; }
+.couverture .couv-meta table { width: 100%; border-collapse: collapse; }
+.couverture .couv-meta td { vertical-align: top; padding: 0 6mm 4.5mm 0; width: 50%; }
+.couverture .couv-meta .k { font-size: 7.5pt; color: #8290b4; }
+.couverture .couv-meta .v { font-size: 9.5pt; color: #e9eefc; margin-top: 0.8mm; }
+
+/* ------------------------------------------------------------------ synthèse et sommaire */
+.section-titre { font-size: 20pt; font-weight: 700; margin-bottom: 1.5mm; bookmark-level: 1; }
+.chapeau { color: var(--ink-3); font-size: 9.5pt; margin-bottom: 7mm; }
+.kpis { width: 100%; border-collapse: separate; border-spacing: 2.5mm 0; margin: 0 -2.5mm 8mm; }
+.kpis td { background: var(--panel); border: 0.25mm solid var(--line-soft); border-radius: 2.5mm; padding: 4mm 4.5mm; width: 25%; vertical-align: top; }
+.kpis .n { font-size: 22pt; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+.kpis .n small { font-size: 10pt; color: var(--ink-3); font-weight: 500; }
+.kpis .k { font-size: 8pt; color: var(--ink-2); margin-top: 1mm; }
+h3.bloc { font-size: 10.5pt; margin: 0 0 3mm; bookmark-level: none; }
+h4 { bookmark-level: none; }
+.barre { display: flex; height: 2.6mm; border-radius: 1.3mm; overflow: hidden; background: var(--line-soft); }
+.barre span { display: block; height: 100%; }
+.repartition { width: 100%; border-collapse: collapse; margin-bottom: 8mm; }
+.repartition td { padding: 1.6mm 0; vertical-align: middle; border-bottom: 0.2mm solid var(--line-soft); }
+.repartition .lib { width: 34%; padding-right: 3mm; }
+.repartition .num { width: 12%; text-align: right; font-weight: 600; padding-left: 3mm; font-variant-numeric: tabular-nums; }
+.repartition .num small { color: var(--ink-3); font-weight: 400; }
+.pastille { display: inline-block; width: 2.2mm; height: 2.2mm; border-radius: 50%; margin-right: 1.8mm; vertical-align: 0.1mm; }
+.deux-col { width: 100%; border-collapse: collapse; }
+.deux-col > tbody > tr > td { width: 50%; vertical-align: top; }
+.deux-col > tbody > tr > td:first-child { padding-right: 6mm; }
+.deux-col > tbody > tr > td:last-child { padding-left: 6mm; }
+
+.sommaire { break-before: page; }
+.sommaire h3 { font-size: 10pt; margin: 6mm 0 1.5mm; padding-bottom: 1.5mm; border-bottom: 0.4mm solid var(--ink); break-after: avoid; bookmark-level: none; }
+.sommaire h3 span { float: right; white-space: nowrap; font-weight: 500; color: var(--ink-3); font-size: 8.5pt; padding-top: 0.6mm; }
+.entree { display: block; color: inherit; text-decoration: none; padding: 1.3mm 0; border-bottom: 0.2mm solid var(--line-soft); break-inside: avoid; }
+.entree .code { display: inline-block; width: 19mm; font-size: 8pt; color: var(--ink-2); }
+.entree .cas { }
+.entree .etat { float: right; margin-left: 4mm; }
+.entree .etat::after { content: target-counter(attr(data-cible), page); display: inline-block; width: 8mm; text-align: right; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.statut { display: inline-block; font-size: 7.5pt; font-weight: 600; padding: 0.3mm 2mm; border-radius: 3mm; white-space: nowrap; }
+.sev { display: inline-block; white-space: nowrap; font-size: 8pt; font-weight: 600; }
+.sev i { display: inline-block; width: 0.9mm; margin-right: 0.45mm; border-radius: 0.3mm; background: var(--line); vertical-align: -0.2mm; }
+.sev i:nth-child(1) { height: 1.6mm; } .sev i:nth-child(2) { height: 2.2mm; } .sev i:nth-child(3) { height: 2.8mm; } .sev i:nth-child(4) { height: 3.4mm; margin-right: 1.5mm; }
+
+/* ------------------------------------------------------------------ fiche */
+.fiche { break-before: page; }
+.seule .fiche { break-before: auto; }
+.entete-seule { display: table; width: 100%; padding-bottom: 4mm; margin-bottom: 7mm; border-bottom: 0.25mm solid var(--line); }
+.entete-seule .marque b { font-size: 10.5pt; } .entete-seule .marque span { font-size: 7.5pt; color: var(--ink-3); }
+.entete-seule .marque svg { width: 8.5mm; height: 8.5mm; }
+.entete-seule > .gauche, .entete-seule > .droite { display: table-cell; vertical-align: middle; }
+.entete-seule .droite { text-align: right; font-size: 8pt; color: var(--ink-3); }
+.entete-seule .droite b { display: block; color: var(--ink); font-size: 10pt; }
+
+.fiche-tete { string-set: code attr(data-code); }
+.fiche-tete .ligne { display: flex; align-items: center; gap: 3mm; font-size: 8.5pt; color: var(--ink-3); }
+.puce-code { font-family: "Mono", monospace; font-size: 9pt; font-weight: 600; color: var(--ink); background: var(--panel); border: 0.25mm solid var(--line); border-radius: 1.5mm; padding: 0.5mm 2mm; }
+.fiche h2 { font-size: 17pt; font-weight: 700; letter-spacing: -0.015em; margin: 3mm 0 5mm; bookmark-level: 1; bookmark-label: attr(data-signet); }
+.libre { font-size: 7.5pt; color: var(--accent); background: #eef1fd; border-radius: 3mm; padding: 0.3mm 2mm; }
+
+.meta { width: 100%; border-collapse: collapse; border: 0.25mm solid var(--line); border-radius: 2mm; margin-bottom: 6mm; }
+.meta td { width: 25%; padding: 2.4mm 3.2mm; vertical-align: top; border-right: 0.25mm solid var(--line-soft); }
+.meta tr + tr td { border-top: 0.25mm solid var(--line-soft); }
+.meta td:last-child { border-right: none; }
+.meta .k { font-size: 7pt; color: var(--ink-3); margin-bottom: 0.8mm; }
+.meta .v { font-size: 8.8pt; font-weight: 500; }
+.meta .v.vide { color: #a3adc8; font-weight: 400; }
+
+.rubrique { margin-bottom: 5.5mm; }
+.rubrique > h3 { font-size: 10pt; font-weight: 600; color: var(--ink); margin-bottom: 2mm; padding-bottom: 1.2mm; border-bottom: 0.25mm solid var(--line); break-after: avoid; bookmark-level: none; }
+.rubrique > h3 small { float: right; white-space: nowrap; padding-top: 0.8mm; font-size: 7.5pt; font-weight: 500; color: var(--ink-3); }
+.logique { background: var(--panel); border-left: 0.9mm solid var(--accent); border-radius: 0 2mm 2mm 0; padding: 3mm 4mm; font-size: 9.2pt; }
+.trio { width: 100%; border-collapse: separate; border-spacing: 0; }
+.conseil { padding: 2.6mm 3.5mm; border-radius: 2mm; border: 0.25mm solid var(--line-soft); margin-bottom: 2.5mm; break-inside: avoid; }
+.conseil h4 { font-size: 8.5pt; margin-bottom: 1mm; }
+.conseil.exclusions { background: #fbf8ef; border-color: #efe3c1; } .conseil.exclusions h4 { color: #8a6400; }
+.conseil.recommandation { background: #f1fbf6; border-color: #cdebdc; } .conseil.recommandation h4 { color: #12865a; }
+.conseil.impact { background: #fdf3f4; border-color: #f2d2d6; } .conseil.impact h4 { color: #b8202f; }
+
+table.donnees { width: 100%; border-collapse: collapse; font-size: 8.4pt; }
+table.donnees th { text-align: left; font-size: 7.3pt; font-weight: 600; color: var(--ink-3); padding: 1.2mm 2.5mm 1.2mm 0; border-bottom: 0.25mm solid var(--line); }
+table.donnees td { padding: 1.5mm 2.5mm 1.5mm 0; border-bottom: 0.2mm solid var(--line-soft); vertical-align: top; }
+table.donnees tr { break-inside: avoid; }
+.etiquette { display: inline-block; font-size: 7.3pt; font-weight: 600; padding: 0.2mm 1.8mm; border-radius: 3mm; white-space: nowrap; }
+.e-collectee { background: #e3f5ec; color: #12865a; } .e-a_activer { background: #fdf0db; color: #9a5c00; } .e-sans_objet { background: #eceff6; color: #66749b; }
+.e-reussi { background: #e3f5ec; color: #12865a; } .e-echoue { background: #fde6e8; color: #b8202f; }
+
+.puces { display: flex; flex-wrap: wrap; gap: 1.6mm; }
+.puce { font-size: 8pt; background: var(--panel); border: 0.25mm solid var(--line-soft); border-radius: 1.5mm; padding: 0.4mm 2mm; }
+.puce b { font-weight: 600; }
+
+.regle { margin-bottom: 4mm; }
+.regle-tete { display: flex; justify-content: space-between; align-items: baseline; background: var(--navy-2); color: #e9eefc; padding: 1.8mm 3.5mm; border-radius: 2mm 2mm 0 0; font-size: 8.5pt; font-weight: 600; break-after: avoid; }
+.regle-tete small { color: #8fa0c8; font-weight: 400; font-size: 7.5pt; }
+pre { margin: 0; background: #f6f8fd; border: 0.25mm solid var(--line); border-top: none; border-radius: 0 0 2mm 2mm; padding: 3mm 3.5mm;
+  font-size: 7.3pt; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; color: #1b2550; orphans: 3; widows: 3; }
+.alerte { font-size: 7.8pt; color: #9a5c00; margin-top: 1.2mm; }
+.note-regle { font-size: 7.8pt; color: var(--ink-2); margin-top: 1.2mm; }
+.absentes { font-size: 8pt; color: var(--ink-3); background: var(--panel); border-radius: 2mm; padding: 2mm 3.5mm; }
+.hunt-titre { font-size: 9pt; font-weight: 600; margin-bottom: 0.8mm; }
+.hunt-meta { font-size: 7.8pt; color: var(--ink-3); margin-bottom: 1.6mm; }
+.vide-doc { text-align: center; color: var(--ink-3); padding: 30mm 0; font-size: 11pt; }
+</style>
+</head>
+<body{% if seule %} class="seule"{% endif %}>
+
+{% with s=synthese %}
+{% if not seule %}
+<!-- ================================================================ couverture -->
+<section class="couverture">
+  <div class="marque">
+    <svg viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#16213d"/><path d="M16 5 6 9v7c0 6 4 9.5 10 11 6-1.5 10-5 10-11V9z" fill="none" stroke="#2dd4bf" stroke-width="2.2"/><path d="m11.5 16 3 3 6-6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div><b>SOC UCF</b><span>UC Factory</span></div>
+  </div>
+  <div class="titre">
+    <div class="kicker">Catalogue de détections</div>
+    <h1>{{ client.nom }}</h1>
+    {% if client.secteur %}<div class="secteur">{{ client.secteur }}</div>{% endif %}
+    <div class="spectre">{% for st in s.par_statut %}{% if st.n %}<span style="width: {{ st.pct|stringformat:'s' }}%; background: {{ st.couleur }}"></span>{% endif %}{% endfor %}</div>
+    <div class="legende-spectre">{% for st in s.par_statut %}<span><i style="background: {{ st.couleur }}"></i>{{ st.label }} {{ st.n }}</span>{% endfor %}</div>
+  </div>
+  <div class="couv-meta">
+    <table>
+      <tr>
+        <td><div class="k">Détections</div><div class="v">{{ fiches|length }}{% if filtre %} ({{ filtre }}){% endif %}</div></td>
+        <td><div class="k">Plateformes SIEM / XDR</div><div class="v">{% for x in siems %}{{ x.nom }}{% if not forloop.last %}, {% endif %}{% empty %}Aucune{% endfor %}</div></td>
+      </tr>
+      <tr>
+        <td><div class="k">Domaines</div><div class="v">{{ sommaire|length }} représenté{{ sommaire|length|pluralize }}{% if domaines %} sur {{ domaines|length }} retenu{{ domaines|length|pluralize }}{% endif %}</div></td>
+        <td><div class="k">Contenu</div><div class="v">{% if technique %}Fiches, règles et requêtes de hunting{% else %}Fiches (sans règles ni hunting){% endif %}</div></td>
+      </tr>
+      <tr>
+        <td><div class="k">Généré le</div><div class="v">{{ genere_le|date:"j F Y à H:i" }}</div></td>
+        <td>{% if auteur %}<div class="k">Par</div><div class="v">{{ auteur }}</div>{% endif %}</td>
+      </tr>
+    </table>
+  </div>
+</section>
+
+<!-- ================================================================ synthèse -->
+<section class="synthese">
+  <h1 class="section-titre">Synthèse</h1>
+  <p class="chapeau">État des {{ fiches|length }} détection{{ fiches|length|pluralize }} de {{ client.nom }} au {{ genere_le|date:"j F Y" }}.</p>
+  {% if fiches %}
+  <table class="kpis"><tr>
+    <td><div class="n">{{ fiches|length }}</div><div class="k">Détections</div></td>
+    <td><div class="n" style="color: {{ statut_couleur.deployee }}">{{ s.par_statut.4.n }}<small> / {{ fiches|length }}</small></div><div class="k">Déployées</div></td>
+    <td><div class="n">{{ s.journalisation_ok }}<small> / {{ fiches|length }}</small></div><div class="k">Journalisation OK</div></td>
+    <td><div class="n">{{ s.nb_techniques }}</div><div class="k">Techniques ATT&amp;CK visées</div></td>
+  </tr></table>
+
+  <table class="deux-col"><tr>
+    <td>
+      <h3 class="bloc">Par statut</h3>
+      <table class="repartition">
+        {% for st in s.par_statut %}<tr>
+          <td class="lib"><span class="pastille" style="background: {{ st.couleur }}"></span>{{ st.label }}</td>
+          <td><div class="barre">{% if st.n %}<span style="width: {{ st.pct|stringformat:'s' }}%; background: {{ st.couleur }}"></span>{% endif %}</div></td>
+          <td class="num">{{ st.n }}</td>
+        </tr>{% endfor %}
+      </table>
+    </td>
+    <td>
+      <h3 class="bloc">Par gravité</h3>
+      <table class="repartition">
+        {% for g in s.par_gravite %}<tr>
+          <td class="lib"><span class="pastille" style="background: {{ g.couleur }}"></span>{{ g.label }}</td>
+          <td><div class="barre">{% if g.n %}<span style="width: {{ g.pct|stringformat:'s' }}%; background: {{ g.couleur }}"></span>{% endif %}</div></td>
+          <td class="num">{{ g.n }}</td>
+        </tr>{% endfor %}
+      </table>
+    </td>
+  </tr></table>
+
+  <h3 class="bloc">Par domaine</h3>
+  <table class="repartition">
+    {% for dom in sommaire %}<tr>
+      <td class="lib">{{ dom.nom }}</td>
+      <td><div class="barre">{% for seg in dom.segments %}<span style="width: {{ seg.pct|stringformat:'s' }}%; background: {{ seg.couleur }}"></span>{% endfor %}</div></td>
+      <td class="num">{{ dom.deployees }}<small> / {{ dom.n }}</small></td>
+    </tr>{% endfor %}
+  </table>
+  <p class="muted" style="font-size: 7.5pt">Barres par domaine : répartition des statuts (mêmes couleurs que ci-dessus). Chiffre : détections déployées / total.</p>
+  {% endif %}
+</section>
+
+<!-- ================================================================ sommaire -->
+{% if fiches %}
+<section class="sommaire">
+  <h1 class="section-titre">Sommaire</h1>
+  {% for dom in sommaire %}
+  <h3>{{ dom.nom }} <span>{{ dom.n }} détection{{ dom.n|pluralize }}</span></h3>
+  {% for f in dom.fiches %}
+  <a class="entree" href="#{{ f.anchor }}">
+    <span class="etat" data-cible="#{{ f.anchor }}"><span class="sev" style="color: {{ f.gravite_couleur }}">{% for i in "1234" %}<i{% if forloop.counter <= f.gravite_niveau %} style="background: {{ f.gravite_couleur }}"{% endif %}></i>{% endfor %}</span><span class="statut" style="color: {{ f.statut_couleur }}; background: {{ f.statut_couleur }}1a">{{ f.obj.get_statut_display }}</span></span>
+    <span class="code mono">{{ f.obj.code }}</span><span class="cas">{{ f.obj.cas_usage }}</span>
+  </a>
+  {% endfor %}
+  {% endfor %}
+</section>
+{% else %}
+<p class="vide-doc">Aucune détection ne correspond aux critères choisis.</p>
+{% endif %}
+{% else %}
+<!-- ================================================================ en-tête (fiche seule) -->
+<div class="entete-seule">
+  <div class="gauche"><div class="marque">
+    <svg viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#0e1627"/><path d="M16 5 6 9v7c0 6 4 9.5 10 11 6-1.5 10-5 10-11V9z" fill="none" stroke="#2dd4bf" stroke-width="2.2"/><path d="m11.5 16 3 3 6-6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div><b>SOC UCF</b><span>Fiche de détection</span></div>
+  </div></div>
+  <div class="droite"><b>{{ client.nom }}</b>{% if client.secteur %}{{ client.secteur }}{% endif %}</div>
+</div>
+{% endif %}
+{% endwith %}
+
+<!-- ================================================================ fiches -->
+{% for f in fiches %}{% with d=f.obj %}
+<article class="fiche" id="{{ f.anchor }}">
+  <header class="fiche-tete" data-code="{{ d.code }}">
+    <div class="ligne">
+      <span class="puce-code">{{ d.code }}</span>
+      <span>{{ d.domaine.nom }}</span>
+      {% if not d.template_id %}<span class="libre">propre à ce client</span>{% endif %}
+    </div>
+    <h2 data-signet="{{ d.code }} · {{ d.cas_usage }}">{{ d.cas_usage }}</h2>
+  </header>
+
+  <table class="meta">
+    <tr>
+      <td><div class="k">Gravité</div><div class="v"><span class="sev" style="color: {{ f.gravite_couleur }}">{% for i in "1234" %}<i{% if forloop.counter <= f.gravite_niveau %} style="background: {{ f.gravite_couleur }}"{% endif %}></i>{% endfor %}{{ d.gravite }}</span></div></td>
+      <td><div class="k">Type</div><div class="v">{{ d.type_detection }}</div></td>
+      <td><div class="k">Statut</div><div class="v"><span class="statut" style="color: {{ f.statut_couleur }}; background: {{ f.statut_couleur }}1a">{{ d.get_statut_display }}</span></div></td>
+      <td><div class="k">Journalisation</div><div class="v"><span class="etiquette {% if d.journalisation == 'ok' %}e-collectee{% else %}e-echoue{% endif %}">{{ d.get_journalisation_display }}</span></div></td>
+    </tr>
+    <tr>
+      <td><div class="k">Déployée le</div><div class="v{% if not d.date_deploiement %} vide{% endif %}">{{ d.date_deploiement|date:"d/m/Y"|default:"—" }}</div></td>
+      <td><div class="k">Référence dans le SIEM</div><div class="v mono{% if not d.reference_siem %} vide{% endif %}" style="font-size: 8pt">{{ d.reference_siem|default:"—" }}</div></td>
+      <td><div class="k">Template d'origine</div><div class="v mono{% if not d.template %} vide{% endif %}" style="font-size: 8pt">{{ d.template.code|default:"—" }}</div></td>
+      <td><div class="k">Dernière modification</div><div class="v{% if not d.modifie_le %} vide{% endif %}">{% if d.modifie_le %}{{ d.modifie_le|date:"d/m/Y" }}{% if d.modifie_par %} <span class="muted" style="font-weight: 400">· {{ d.modifie_par.get_full_name|default:d.modifie_par.username }}</span>{% endif %}{% else %}—{% endif %}</div></td>
+    </tr>
+  </table>
+
+  {% if d.logique %}
+  <section class="rubrique"><h3>Logique de la règle</h3><div class="logique texte">{{ d.logique }}</div></section>
+  {% endif %}
+
+  {% if d.exclusions or d.recommandation or d.impact %}
+  <section class="rubrique">
+    <h3>Traitement de l'alerte</h3>
+    {% if d.impact %}<div class="conseil impact"><h4>Impact</h4><div class="texte">{{ d.impact }}</div></div>{% endif %}
+    {% if d.recommandation %}<div class="conseil recommandation"><h4>Recommandation</h4><div class="texte">{{ d.recommandation }}</div></div>{% endif %}
+    {% if d.exclusions %}<div class="conseil exclusions"><h4>Exclusions</h4><div class="texte">{{ d.exclusions }}</div></div>{% endif %}
+  </section>
+  {% endif %}
+
+  {% if f.techniques %}
+  <section class="rubrique">
+    <h3>MITRE ATT&amp;CK <small>{{ f.techniques|length }} technique{{ f.techniques|length|pluralize }}</small></h3>
+    <table class="donnees">
+      <thead><tr><th style="width: 19mm">ID</th><th>Technique</th><th style="width: 52mm">Tactiques</th></tr></thead>
+      <tbody>{% for t in f.techniques %}<tr><td class="mono">{{ t.id }}</td><td>{{ t.nom }}</td><td class="muted">{{ t.tactiques }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </section>
+  {% endif %}
+
+  {% if d.logs_a_collecter or f.sources %}
+  <section class="rubrique">
+    <h3>Journalisation et sources</h3>
+    {% if d.logs_a_collecter %}<p class="texte" style="margin-bottom: 2.5mm">{{ d.logs_a_collecter }}</p>{% endif %}
+    {% if f.sources %}
+    <table class="donnees">
+      <thead><tr><th>Source de logs</th><th style="width: 22mm">Requise</th><th style="width: 30mm">Chez le client</th></tr></thead>
+      <tbody>{% for src in f.sources %}<tr><td>{{ src.nom }}</td><td>{% if src.obligatoire %}Oui{% else %}<span class="muted">Utile</span>{% endif %}</td><td><span class="etiquette e-{{ src.statut }}">{{ src.statut_label }}</span></td></tr>{% endfor %}</tbody>
+    </table>
+    {% endif %}
+  </section>
+  {% endif %}
+
+  {% if f.parametres or f.listes or d.detections_similaires %}
+  <section class="rubrique">
+    <h3>Paramètres et références</h3>
+    {% if f.parametres %}<div class="puces" style="margin-bottom: 2mm">{% for p in f.parametres %}<span class="puce mono">{{ p.nom }} = <b>{{ p.valeur }}</b></span>{% endfor %}</div>{% endif %}
+    {% if f.listes %}<table class="donnees" style="margin-bottom: 2mm"><thead><tr><th style="width: 40mm">Liste de référence</th><th>Valeurs</th></tr></thead><tbody>{% for l in f.listes %}<tr><td class="mono">{{ l.nom }}</td><td>{{ l.valeurs|default:"—" }}</td></tr>{% endfor %}</tbody></table>{% endif %}
+    {% if d.detections_similaires %}<p><span class="muted">Détections similaires :</span> {{ d.detections_similaires }}</p>{% endif %}
+  </section>
+  {% endif %}
+
+  {% if technique %}
+  <section class="rubrique">
+    <h3>Règles <small>{{ f.regles|length }} / {{ siems|length }} plateforme{{ siems|length|pluralize }}</small></h3>
+    {% for r in f.regles %}
+    <div class="regle">
+      <div class="regle-tete"><span>{{ r.siem }}</span><small>{{ r.langage }}</small></div>
+      <pre>{{ r.code }}</pre>
+      {% if r.manquants %}<p class="alerte">Paramètres sans valeur : {{ r.manquants|join:", " }}</p>{% endif %}
+      {% if r.champs %}<p class="note-regle"><span class="muted">Champs requis :</span> <span class="mono">{{ r.champs|join:", " }}</span></p>{% endif %}
+      {% if r.notes %}<p class="note-regle texte">{{ r.notes }}</p>{% endif %}
+    </div>
+    {% endfor %}
+    {% if f.regles_absentes %}<p class="absentes">Règle non rédigée pour : {{ f.regles_absentes|join:", " }}.</p>{% endif %}
+  </section>
+
+  {% if f.hunting %}
+  <section class="rubrique">
+    <h3>Requêtes de hunting <small>{{ f.hunting|length }}</small></h3>
+    {% for h in f.hunting %}
+    <div class="regle">
+      <p class="hunt-titre">{{ h.titre }}</p>
+      {% if h.objectif or h.periode %}<p class="hunt-meta">{{ h.objectif }}{% if h.objectif and h.periode %} · {% endif %}{% if h.periode %}Période conseillée : {{ h.periode }}{% endif %}</p>{% endif %}
+      <div class="regle-tete"><span>{{ h.siem }}</span><small>{{ h.langage }}</small></div>
+      <pre>{{ h.code }}</pre>
+    </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+  {% endif %}
+
+  {% if f.preuves %}
+  <section class="rubrique">
+    <h3>Tests <small>{{ f.preuves|length }}</small></h3>
+    <table class="donnees">
+      <thead><tr><th style="width: 26mm">Date</th><th style="width: 22mm">Résultat</th><th>Description</th></tr></thead>
+      <tbody>{% for p in f.preuves %}<tr><td>{{ p.date|date:"d/m/Y H:i" }}</td><td><span class="etiquette e-{{ p.resultat }}">{{ p.get_resultat_display }}</span></td><td class="texte">{{ p.description|default:"—" }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </section>
+  {% endif %}
+
+  {% if d.notes %}
+  <section class="rubrique"><h3>Notes</h3><div class="texte">{{ d.notes }}</div></section>
+  {% endif %}
+</article>
+{% endwith %}{% endfor %}
+</body>
+</html>

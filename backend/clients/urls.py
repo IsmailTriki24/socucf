@@ -14,6 +14,7 @@ urlpatterns = [
     path("clients/<int:client_id>/couverture", views.client_couverture),
     path("clients/<int:client_id>/export.<str:fmt>", views.client_export),
     path("detections/<int:pk>", views.detection_detail),
+    path("detections/<int:pk>/export.pdf", views.detection_export_pdf),
     path("detections/<int:pk>/reinitialiser", views.detection_reinitialiser),
     path("detections/<int:pk>/syntaxes/<slug:siem_code>", views.detection_syntaxe),
     path("detections/<int:pk>/hunting", views.detection_hunting_create),

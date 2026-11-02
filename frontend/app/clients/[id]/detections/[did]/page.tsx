@@ -1,10 +1,10 @@
 "use client";
-import { Suspense, use, useMemo } from "react";
+import { Suspense, use, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChevronRight, RotateCcw, Trash2 } from "lucide-react";
+import { ChevronRight, FileDown, RotateCcw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { api, del, get, patch, post, put } from "@/lib/api";
+import { api, del, download, get, patch, post, put } from "@/lib/api";
 import { errMsg, useAsync } from "@/lib/hooks";
 import { fmtDate, relTime } from "@/lib/format";
 import { STATUTS, STATUT_LABEL } from "@/lib/status";
@@ -32,6 +32,7 @@ function Detection({ id, did }: { id: string; did: string }) {
   const allSources = useAsync(() => get<SourceLog[]>("/sources-log"), []);
   const tactiques = useAsync(() => get<Tactique[]>("/tactiques"), []);
   const guide = useAsync(() => get<Guide>("/guide-traduction"), []);
+  const [pdfBusy, setPdfBusy] = useState(false);
   const tab = (sp.get("onglet") as Tab) || "fiche";
   const setTab = (t: Tab) => router.replace(`/clients/${id}/detections/${did}?onglet=${t}`, { scroll: false });
   const d = r.data;
@@ -144,6 +145,11 @@ function Detection({ id, did }: { id: string; did: string }) {
             {d.template_code && <p className="text-fg-3">Copiée du template <Link className="mono text-accent hover:underline" href={`/templates/${d.template_code}`}>{d.template_code}</Link></p>}
             <time className="sr-only">{fmtDate(d.modifie_le, true)}</time>
           </section>
+
+          <Button icon={<FileDown className="size-4" />} loading={pdfBusy} onClick={async () => {
+            setPdfBusy(true);
+            try { await download(`/detections/${d.id}/export.pdf`, `${d.code}.pdf`); } catch (e) { fail(e); } finally { setPdfBusy(false); }
+          }}>Exporter en PDF</Button>
 
           {editable && (
             <div className="grid gap-2">

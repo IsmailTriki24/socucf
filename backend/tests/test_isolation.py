@@ -29,6 +29,8 @@ def client_urls(c, d):
         ("get", f"/api/clients/{c.pk}/export.xlsx"),
         ("get", f"/api/clients/{c.pk}/export.csv"),
         ("get", f"/api/clients/{c.pk}/export.navigator.json"),
+        ("get", f"/api/clients/{c.pk}/export.pdf"),
+        ("get", f"/api/detections/{d.pk}/export.pdf"),
         ("get", f"/api/detections/{d.pk}"),
         ("patch", f"/api/detections/{d.pk}"),
         ("delete", f"/api/detections/{d.pk}"),

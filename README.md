@@ -4,7 +4,7 @@ Application web de l'**UC Factory SOC** : une bibliothèque de templates de dét
 
 Spécification d'origine : `UC_Factory_SOC_Plan_de_developpement.md` · Données sources : `Catalogue_Detection_Generique_v1.0.xlsx`.
 
-**Stack** : Django 5.2 LTS + Django REST Framework (API), Next.js 15 / React 19 (interface), PostgreSQL 16 (SQLite en développement local), Nginx (TLS). Interface : Tailwind CSS 4, Radix UI, lucide, cmdk (Ctrl K), sonner, dnd-kit (tableau), react-zoom-pan-pinch (matrice ATT&CK), CodeMirror 6 (règles). Tout est open source. Authentification par session Django ; SSO OpenID Connect optionnel.
+**Stack** : Django 5.2 LTS + Django REST Framework (API, PDF par WeasyPrint), Next.js 15 / React 19 (interface), PostgreSQL 16 (SQLite en développement local), Nginx (TLS). Interface : Tailwind CSS 4, Radix UI, lucide, cmdk (Ctrl K), sonner, dnd-kit (tableau), react-zoom-pan-pinch (matrice ATT&CK), CodeMirror 6 (règles). Tout est open source. Authentification par session Django ; SSO OpenID Connect optionnel.
 
 ## Démarrage local
 
@@ -43,7 +43,7 @@ Services : `nginx` (TLS, `/api` vers Django, le reste vers Next.js), `backend` (
 5. **Sources de logs** : bouton **Ajouter** (tableau de bord et onglet « Journalisation et sources ») : affiche ce qu'il faut activer, marque la source comme ajoutée et passe les détections concernées en journalisation OK.
 6. **Couverture ATT&CK** : matrice dans un cadre zoomable (molette, boutons, plein écran, mini-carte), colorée par nombre de détections ou par statut, au choix des statuts comptés (par défaut : Déployé).
 7. **Bibliothèque** (*Templates*) : mêmes champs que les détections, avec filtres, création, duplication, suppression. Un template supprimé ne touche pas les détections déjà copiées chez les clients.
-8. **Exports** par client : Excel (format du catalogue + colonnes client), CSV, layer ATT&CK Navigator.
+8. **Exports** par client : **PDF**, Excel (format du catalogue + colonnes client), CSV, layer ATT&CK Navigator. Le PDF contient une page de garde, une synthèse (statuts, gravités, domaines), un sommaire avec numéros de page et une fiche par détection ; on choisit les statuts inclus et si les règles et le hunting y figurent. Il existe aussi pour une seule détection (bouton *Exporter en PDF* de sa page) ou pour une sélection (barre d'actions groupées de la liste).
 
 ### Plateformes prises en charge (modifiables dans *Plateformes et sources*)
 
@@ -61,6 +61,7 @@ Toutes ne sont pas des « SIEM » au sens strict, d'où les familles. Seules les
 - **Isolation** : toute lecture de données client passe par `Client.objects.visible_to(user)` ou `get_client_or_404` ; un client hors périmètre renvoie 404, des droits insuffisants 403. `test_isolation.py` vérifie une vingtaine de routes pour un utilisateur sans accès, un utilisateur d'un autre client, le Responsable catalogue et un visiteur anonyme.
 - **Rôles** : Admin client, Valideur et Contributeur modifient les détections ; Lecteur lit et exporte. Seuls l'Administrateur plateforme (client) et le Responsable catalogue (bibliothèque, référentiels, imports) créent et modifient ces objets.
 - **Journal d'audit** : chaque écriture est tracée (qui, quand, avant / après), en ajout seul.
+- **Export PDF** : mis en page côté serveur par WeasyPrint (HTML/CSS, gabarit `clients/templates/clients/detections_pdf.html`), avec les polices de l'interface livrées dans `clients/pdf/fonts` (licence OFL). Le PDF ne charge aucune ressource externe : seules ces polices sont autorisées. En local, WeasyPrint a besoin de Pango (présent sur la plupart des distributions Linux) ; l'image Docker l'installe.
 - **Réimport Excel** : un import réel écrase le contenu des templates existants avec celui du fichier (utilisez la simulation d'abord).
 - **Techniques ATT&CK inconnues** : l'import garde le lien et marque la technique « non vérifiée ».
 - **Migration depuis la v1** : les migrations `catalog 0003-0005` et `clients 0002-0004` conservent les données (contenu de la version courante copié dans le template, détections clients rendues autonomes, statut « Retirée » supprimé). Faites une sauvegarde avant de migrer une base existante.

@@ -41,7 +41,7 @@ from .models import (
 )
 from .services import coverage as cov_service
 from .services import detections as svc
-from .services import exports
+from .services import exports, pdf
 
 MAX_PREUVE = 5 * 1024 * 1024
 PREUVE_EXT = {".png", ".jpg", ".jpeg", ".gif", ".pdf", ".txt", ".log", ".json", ".csv"}
@@ -465,11 +465,28 @@ def client_export(request, client_id, fmt):
     elif fmt == "csv":
         resp = HttpResponse(exports.client_csv(c), content_type="text/csv; charset=utf-8")
         resp["Content-Disposition"] = f'attachment; filename="uc_factory_{slug}.csv"'
+    elif fmt == "pdf":
+        statuts = pdf.parse_statuts(request.query_params.get("statuts"))
+        ids = pdf.parse_ids(request.query_params.get("ids"))
+        data = pdf.detections_pdf(c, statuts=statuts, ids=ids, technique=request.query_params.get("technique") != "0", auteur=request.user)
+        resp = HttpResponse(data, content_type="application/pdf")
+        resp["Content-Disposition"] = f'attachment; filename="detections_{slug}.pdf"'
     elif fmt == "navigator.json":
         resp = JsonResponse(exports.navigator_layer(c, request.query_params.get("statuts")), json_dumps_params={"ensure_ascii": False, "indent": 1})
         resp["Content-Disposition"] = f'attachment; filename="navigator_{slug}.json"'
     else:
         raise NotFound()
+    resp["X-Content-Type-Options"] = "nosniff"
+    return resp
+
+
+@api_view(["GET"])
+def detection_export_pdf(request, pk):
+    d = get_detection(request.user, pk, "export")
+    slug = "".join(ch if ch.isalnum() else "_" for ch in f"{d.code}_{d.client.nom}").strip("_") or "detection"
+    data = pdf.detections_pdf(d.client, seule=d, technique=request.query_params.get("technique") != "0", auteur=request.user)
+    resp = HttpResponse(data, content_type="application/pdf")
+    resp["Content-Disposition"] = f'attachment; filename="{slug}.pdf"'
     resp["X-Content-Type-Options"] = "nosniff"
     return resp
 

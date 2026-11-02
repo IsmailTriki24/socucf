@@ -2,9 +2,9 @@
 import { Suspense, use, useCallback, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { DndContext, DragOverlay, KeyboardSensor, PointerSensor, closestCorners, useDroppable, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
-import { LayoutGrid, Columns3, Plus, Search, Trash2, X } from "lucide-react";
+import { FileDown, LayoutGrid, Columns3, Plus, Search, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
-import { get, patch, post } from "@/lib/api";
+import { download, get, patch, post } from "@/lib/api";
 import { errMsg, useAsync, useStored } from "@/lib/hooks";
 import { GRAVITES, STATUTS, STATUT_LABEL, TYPES, graviteColor, statutColor, type StatutId } from "@/lib/status";
 import { cn } from "@/lib/cn";
@@ -49,6 +49,7 @@ function Page_({ id }: { id: string }) {
   const [view, setView] = useStored<"board" | "grid">("socucf.vue", "board");
   const [items, setItems] = useState<DetectionItem[] | null>(null);
   const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [pdfBusy, setPdfBusy] = useState(false);
   const [adding, setAdding] = useState(false);
   const [active, setActive] = useState<DetectionItem | null>(null);
 
@@ -192,6 +193,10 @@ function Page_({ id }: { id: string }) {
           <span className="px-2 text-[14px] font-medium">{selected.size} sélectionnée{selected.size > 1 ? "s" : ""}</span>
           <Menu align="start" trigger={<Button>Statut</Button>} items={STATUTS.map((s) => ({ label: s.label, icon: <span className="size-2.5 rounded-full" style={{ background: statutColor(s.id) }} />, onSelect: () => { changeStatut([...selected], s.id); setSelected(new Set()); } }))} />
           <Menu align="start" trigger={<Button>Journalisation</Button>} items={[{ label: "OK", onSelect: () => { changeJournal([...selected], "ok"); setSelected(new Set()); } }, { label: "Non", onSelect: () => { changeJournal([...selected], "non"); setSelected(new Set()); } }]} />
+          <Button icon={<FileDown className="size-4" />} loading={pdfBusy} onClick={async () => {
+            setPdfBusy(true);
+            try { await download(`/clients/${client.id}/export.pdf?ids=${[...selected].join(",")}`, "detections.pdf"); } catch (e) { toast.error(errMsg(e)); } finally { setPdfBusy(false); }
+          }}>PDF</Button>
           <Button variant="danger" icon={<Trash2 className="size-4" />} onClick={() => remove([...selected])}>Supprimer</Button>
           <IconButton label="Annuler la sélection" onClick={() => setSelected(new Set())}><X className="size-4" /></IconButton>
         </div>

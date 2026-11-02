@@ -270,6 +270,69 @@ def test_excel_and_csv_formula_injection_neutralised(world):
         assert all(not c.startswith(("=", "+", "-", "@")) for c in row)
 
 
+def pdf_text(content: bytes) -> str:
+    from pypdf import PdfReader
+
+    assert content.startswith(b"%PDF")
+    reader = PdfReader(io.BytesIO(content))
+    return "\n".join(page.extract_text() for page in reader.pages), len(reader.pages)
+
+
+@pytest.mark.django_db
+def test_pdf_export_of_client_detections(world):
+    det = get_det(world.a)
+    api(world.contrib).patch(f"/api/detections/{det.pk}", {"parametres": {"seuil": 12}, "impact": "Compte compromis probable"}, format="json")
+    r = api(world.lecteur).get(f"/api/clients/{world.a.pk}/export.pdf")
+    assert r.status_code == 200 and r["Content-Type"] == "application/pdf"
+    assert r["Content-Disposition"].startswith('attachment; filename="detections_')
+    text, pages = pdf_text(r.content)
+    nb = DetectionClient.objects.filter(client=world.a).count()
+    assert pages >= nb + 3  # couverture, synthèse, sommaire, puis une fiche par détection
+    assert world.a.nom in text and "Synthèse" in text and "Sommaire" in text
+    assert "DET-001" in text and det.cas_usage in text and "Compte compromis probable" in text
+    assert 'frequency="12"' in text and "{{seuil}}" not in text  # paramètres remplacés par les valeurs du client
+
+
+@pytest.mark.django_db
+def test_pdf_export_filters_and_content_toggle(world):
+    det = get_det(world.a)
+    api(world.contrib).patch(f"/api/detections/{det.pk}", {"statut": "deployee"}, format="json")
+    text, _ = pdf_text(api(world.lecteur).get(f"/api/clients/{world.a.pk}/export.pdf?statuts=deployee").content)
+    autres = DetectionClient.objects.filter(client=world.a).exclude(pk=det.pk).values_list("code", flat=True)
+    assert "DET-001" in text and not any(code in text for code in autres)
+    assert "statuts : Déployé" in text
+
+    autre = DetectionClient.objects.filter(client=world.a).exclude(pk=det.pk).first()
+    text, _ = pdf_text(api(world.lecteur).get(f"/api/clients/{world.a.pk}/export.pdf?ids={det.pk},{autre.pk}&technique=0").content)
+    assert "DET-001" in text and autre.code in text and "sélection manuelle" in text
+    assert "<group" not in text and "Règle non rédigée" not in text  # sans règles ni hunting
+
+
+@pytest.mark.django_db
+def test_pdf_export_of_one_detection(world):
+    det = get_det(world.a)
+    r = api(world.lecteur).get(f"/api/detections/{det.pk}/export.pdf")
+    assert r.status_code == 200 and r["Content-Type"] == "application/pdf"
+    assert 'filename="DET_001_' in r["Content-Disposition"]
+    text, pages = pdf_text(r.content)
+    assert "Fiche de détection" in text and det.cas_usage in text and "Sommaire" not in text and pages <= 4
+
+
+@pytest.mark.django_db
+def test_pdf_export_escapes_content_and_loads_no_external_resource(world):
+    from clients.services.pdf import _fetcher, css_string
+
+    det = get_det(world.a)
+    piege = '<img src="file:///etc/passwd"><style>body{display:none}</style>'
+    api(world.contrib).patch(f"/api/detections/{det.pk}", {"impact": piege}, format="json")
+    text, _ = pdf_text(api(world.lecteur).get(f"/api/detections/{det.pk}/export.pdf").content)
+    assert "Impact" in text and "passwd" in text and "display:none" in text  # rendu comme du texte, pas comme du HTML
+    for url in ("https://example.com/x.png", "file:///etc/passwd"):
+        with pytest.raises(ValueError):
+            _fetcher().fetch(url)
+    assert css_string('a"; } @page { x') == '"a\\22 \\3b  \\7d  \\40 page \\7b  x"'
+
+
 @pytest.mark.django_db
 def test_changes_are_audited(world):
     d = get_det(world.a)
