@@ -1,7 +1,8 @@
 """Export PDF des détections d'un client : page de garde, synthèse, sommaire, puis une fiche par détection.
 
 Le document est écrit en HTML/CSS (gabarit ``clients/detections_pdf.html``) et mis en page par WeasyPrint.
-Les polices sont celles de l'interface (Schibsted Grotesk, JetBrains Mono, licence OFL), livrées dans ``clients/pdf/fonts``.
+Les polices sont celles de l'interface (Schibsted Grotesk, JetBrains Mono, licence OFL), livrées dans ``clients/pdf/fonts`` ;
+le logo du Tunisian Financial Cert (vectoriel) est dans ``clients/pdf``.
 """
 from collections import OrderedDict
 from pathlib import Path
@@ -10,9 +11,11 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 
-from catalog.models import GRAVITE_ORDRE, TactiqueMitre, render_parametres
+from django.utils.html import escape
 
-from ..models import ClientSource, DetectionClient, StatutDetection, StatutSource
+from catalog.models import GRAVITE_ORDRE, PARAM_RE, TactiqueMitre
+
+from ..models import DetectionClient, StatutDetection
 
 ASSETS = Path(__file__).resolve().parent.parent / "pdf"
 
@@ -58,23 +61,36 @@ def _queryset(client):
     return (
         DetectionClient.objects.filter(client=client)
         .select_related("domaine", "template", "proprietaire", "modifie_par")
-        .prefetch_related("detection_sources__source", "techniques", "syntaxes__siem", "requetehuntings__siem", "preuves")
+        .prefetch_related("techniques", "syntaxes__siem", "requetehuntings__siem", "preuves")
         .order_by("domaine__ordre", "domaine__nom", "code")
     )
 
 
-def _fiche(d: DetectionClient, siems, statuts_sources: dict, tactiques: dict, technique: bool) -> dict:
+NB_COULEURS_PARAM = 6  # classes .p-1 à .p-6 du gabarit
+
+
+def _code_colore(texte: str, valeurs: dict, couleurs: dict) -> tuple[str, list[str]]:
+    """Code de la règle avec chaque {{paramètre}} remplacé par sa valeur, dans la couleur de sa pastille ;
+    un paramètre sans valeur reste {{nom}}, surligné en rouge. Tout le reste est échappé."""
+    morceaux, manquants, fin = [], [], 0
+    for m in PARAM_RE.finditer(texte or ""):
+        morceaux.append(escape(texte[fin:m.start()]))
+        nom = m.group(1)
+        if nom in valeurs and valeurs[nom] not in (None, ""):
+            morceaux.append(f'<span class="pv {couleurs.get(nom, "p-1")}">{escape(str(valeurs[nom]))}</span>')
+        else:
+            if nom not in manquants:
+                manquants.append(nom)
+            morceaux.append(f'<span class="pv-manquant">{escape(m.group(0))}</span>')
+        fin = m.end()
+    morceaux.append(escape((texte or "")[fin:]))
+    return mark_safe("".join(morceaux)), manquants
+
+
+def _fiche(d: DetectionClient, siems, tactiques: dict, technique: bool) -> dict:
     valeurs = d.valeurs_parametres()
-    sources = [
-        {
-            "nom": ds.source.nom,
-            "obligatoire": ds.obligatoire,
-            "statut": statuts_sources.get(ds.source_id, StatutSource.A_ACTIVER),
-        }
-        for ds in d.detection_sources.all()
-    ]
-    for s in sources:
-        s["statut_label"] = StatutSource(s["statut"]).label
+    noms = list((d.parametres or {}).keys()) + [n for n in (d.listes_reference or {}) if n not in (d.parametres or {})]
+    couleurs = {nom: f"p-{i % NB_COULEURS_PARAM + 1}" for i, nom in enumerate(noms)}
     techniques = [
         {"id": t.identifiant, "nom": t.nom, "tactiques": ", ".join(tactiques.get(x, x) for x in t.tactiques)}
         for t in sorted(d.techniques.all(), key=lambda t: t.identifiant)
@@ -86,16 +102,16 @@ def _fiche(d: DetectionClient, siems, statuts_sources: dict, tactiques: dict, te
             if s is None or not s.contenu.strip():
                 regles_absentes.append(siem.nom)
                 continue
-            texte, manquants = render_parametres(s.contenu, valeurs)
+            texte, manquants = _code_colore(s.contenu, valeurs, couleurs)
             regles.append({"siem": siem.nom, "langage": siem.langage_regle, "code": texte, "manquants": manquants,
                            "champs": s.champs_requis or [], "notes": s.notes})
         ordre = {s.pk: i for i, s in enumerate(siems)}
         for h in sorted(d.requetehuntings.all(), key=lambda h: (ordre.get(h.siem_id, 99), h.titre)):
-            texte, _ = render_parametres(h.requete, valeurs)
+            texte, _ = _code_colore(h.requete, valeurs, couleurs)
             hunting.append({"siem": h.siem.nom, "langage": h.siem.langage_hunting, "titre": h.titre, "objectif": h.objectif,
                             "periode": h.periode_conseillee, "code": texte})
     listes = [
-        {"nom": nom, "valeurs": ", ".join(str(v) for v in (vals if isinstance(vals, (list, tuple)) else [vals]))}
+        {"nom": nom, "couleur": couleurs[nom], "valeurs": ", ".join(str(v) for v in (vals if isinstance(vals, (list, tuple)) else [vals]))}
         for nom, vals in (d.listes_reference or {}).items()
     ]
     return {
@@ -104,9 +120,8 @@ def _fiche(d: DetectionClient, siems, statuts_sources: dict, tactiques: dict, te
         "gravite_couleur": GRAVITE_COULEUR.get(d.gravite, "#66749b"),
         "gravite_niveau": GRAVITE_NIVEAU.get(d.gravite, 0),
         "statut_couleur": STATUT_COULEUR.get(d.statut, "#66749b"),
-        "sources": sources,
         "techniques": techniques,
-        "parametres": [{"nom": k, "valeur": v} for k, v in (d.parametres or {}).items()],
+        "parametres": [{"nom": k, "valeur": v, "couleur": couleurs[k]} for k, v in (d.parametres or {}).items()],
         "listes": listes,
         "regles": regles,
         "regles_absentes": regles_absentes,
@@ -135,7 +150,7 @@ def _synthese(detections: list[DetectionClient]) -> dict:
 
 
 def detections_pdf(client, *, statuts: list[str] | None = None, ids: list[int] | None = None,
-                   technique: bool = True, seule: DetectionClient | None = None, auteur=None) -> bytes:
+                   technique: bool = True, seule: DetectionClient | None = None) -> bytes:
     """PDF des détections du client (filtrées par statut et/ou par identifiants), ou d'une seule détection (``seule``)."""
     from weasyprint import HTML
 
@@ -149,9 +164,8 @@ def detections_pdf(client, *, statuts: list[str] | None = None, ids: list[int] |
             qs = qs.filter(pk__in=ids)
     detections = list(qs)
     siems = list(client.siems.order_by("ordre", "nom"))
-    statuts_sources = dict(ClientSource.objects.filter(client=client).values_list("source_id", "statut"))
     tactiques = dict(TactiqueMitre.objects.values_list("shortname", "nom"))
-    fiches = [_fiche(d, siems, statuts_sources, tactiques, technique) for d in detections]
+    fiches = [_fiche(d, siems, tactiques, technique) for d in detections]
 
     groupes: OrderedDict[str, list] = OrderedDict()
     for f in fiches:
@@ -183,9 +197,6 @@ def detections_pdf(client, *, statuts: list[str] | None = None, ids: list[int] |
             morceaux.append("sélection manuelle")
         filtre = " · ".join(morceaux) or None
 
-    genere_le = timezone.localtime()
-    auteur_nom = (auteur.get_full_name() or auteur.get_username()) if auteur is not None else ""
-    pied = f"Généré le {genere_le:%d/%m/%Y à %H:%M}" + (f" par {auteur_nom}" if auteur_nom else "")
     html = render_to_string("clients/detections_pdf.html", {
         "assets": ASSETS.as_uri(),
         "client": client,
@@ -197,14 +208,13 @@ def detections_pdf(client, *, statuts: list[str] | None = None, ids: list[int] |
         "seule": seule is not None,
         "technique": technique,
         "filtre": filtre,
-        "genere_le": genere_le,
-        "auteur": auteur_nom,
-        "css": {"entete": mark_safe(css_string(f"SOC UCF  ·  {client.nom}")), "pied": mark_safe(css_string(pied))},
+        "genere_le": timezone.localtime(),
+        "css": {"client": mark_safe(css_string(client.nom))},
         "statut_couleur": STATUT_COULEUR,
     })
     titre = f"{detections[0].code} · {client.nom}" if seule is not None and detections else f"Détections · {client.nom}"
     doc = HTML(string=html, base_url=ASSETS.as_uri() + "/", url_fetcher=_fetcher()).render()
     doc.metadata.title = titre
-    doc.metadata.authors = ["SOC UCF"]
+    doc.metadata.authors = ["Tunisian Financial Cert"]
     doc.metadata.lang = "fr"
     return doc.write_pdf()

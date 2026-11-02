@@ -291,6 +291,18 @@ def test_pdf_export_of_client_detections(world):
     assert world.a.nom in text and "Synthèse" in text and "Sommaire" in text
     assert "DET-001" in text and det.cas_usage in text and "Compte compromis probable" in text
     assert 'frequency="12"' in text and "{{seuil}}" not in text  # paramètres remplacés par les valeurs du client
+    assert "Généré le" not in text and world.lecteur.username not in text  # ni pied « généré par », ni auteur
+
+
+def test_pdf_rule_parameters_are_coloured_and_escaped():
+    from clients.services.pdf import _code_colore
+
+    html, manquants = _code_colore('<rule frequency="{{seuil}}"> {{ fenetre }} {{absent}}', {"seuil": 8, "fenetre": "10m"}, {"seuil": "p-1", "fenetre": "p-2"})
+    assert '&lt;rule frequency=&quot;<span class="pv p-1">8</span>&quot;&gt;' in html
+    assert '<span class="pv p-2">10m</span>' in html and '<span class="pv-manquant">{{absent}}</span>' in html
+    assert manquants == ["absent"]
+    html, _ = _code_colore("{{x}}", {"x": "<script>"}, {"x": "p-3"})
+    assert "<script>" not in html and "&lt;script&gt;" in html
 
 
 @pytest.mark.django_db
@@ -315,7 +327,7 @@ def test_pdf_export_of_one_detection(world):
     assert r.status_code == 200 and r["Content-Type"] == "application/pdf"
     assert 'filename="DET_001_' in r["Content-Disposition"]
     text, pages = pdf_text(r.content)
-    assert "Fiche de détection" in text and det.cas_usage in text and "Sommaire" not in text and pages <= 4
+    assert "Fiche de détection" in text and "Tenant" not in text and world.a.nom in text and det.cas_usage in text and "Sommaire" not in text and pages <= 4
 
 
 @pytest.mark.django_db

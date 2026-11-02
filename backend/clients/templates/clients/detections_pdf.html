@@ -13,20 +13,20 @@
 @font-face { font-family: "Mono"; src: url("{{ assets }}/fonts/jetbrains-mono-latin-ext-wght-normal.woff2");
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
 
+/* Couleurs du Tunisian Financial Cert : marine #26307a, cyan #1aa3cc */
 :root {
   --ink: #111a36; --ink-2: #435080; --ink-3: #66749b; --line: #d8dfee; --line-soft: #e8ecf5;
-  --panel: #f4f6fb; --navy: #0b1224; --navy-2: #131d36; --accent: #3550e0; --teal: #2dd4bf;
+  --panel: #f4f6fb; --navy: #1b2260; --navy-2: #1f275f; --accent: #26307a; --cyan: #1aa3cc;
 }
 
 @page {
-  size: A4; margin: 21mm 17mm 20mm 17mm;
-  @top-left { content: {{ css.entete }}; font: 500 7.5pt "Grotesk", sans-serif; color: #66749b; vertical-align: bottom; padding-bottom: 3mm; }
-  @top-right { content: string(code); font: 500 7.5pt "Mono", monospace; color: #66749b; vertical-align: bottom; padding-bottom: 3mm; }
-  @bottom-left { content: {{ css.pied }}; font: 400 7pt "Grotesk", sans-serif; color: #8a96b8; vertical-align: top; padding-top: 3mm; }
+  size: A4; margin: 23mm 17mm 20mm 17mm;
+  @top-left { content: url("{{ assets }}/logo-entete.png"); image-resolution: 1100dpi; vertical-align: bottom; padding-bottom: 3mm; }
+  @top-right { content: {{ css.client }} string(code); font: 500 7.5pt "Grotesk", sans-serif; color: #66749b; vertical-align: bottom; padding-bottom: 3.2mm; }
   @bottom-right { content: counter(page) " / " counter(pages); font: 500 7.5pt "Grotesk", sans-serif; color: #435080; vertical-align: top; padding-top: 3mm; }
 }
 {% if seule %}@page :first { @top-left { content: none; } @top-right { content: none; } }{% endif %}
-@page couverture { margin: 0; @top-left { content: none; } @top-right { content: none; } @bottom-left { content: none; } @bottom-right { content: none; } }
+@page couverture { margin: 0; @top-left { content: none; } @top-right { content: none; } @bottom-right { content: none; } }
 
 * { box-sizing: border-box; }
 html { font-family: "Grotesk", "DejaVu Sans", sans-serif; font-size: 9pt; line-height: 1.5; color: var(--ink); }
@@ -38,26 +38,21 @@ p { margin: 0; }
 .texte { white-space: pre-line; overflow-wrap: break-word; }
 
 /* ------------------------------------------------------------------ couverture */
-.couverture { page: couverture; height: 297mm; background: var(--navy); color: #e9eefc; position: relative; padding: 24mm 22mm; }
-.marque { display: table; }
-.marque > svg, .marque > div { display: table-cell; vertical-align: middle; }
-.marque > div { padding-left: 3.5mm; white-space: nowrap; }
-.marque svg { width: 11mm; height: 11mm; }
-.marque b { display: block; font-size: 13pt; font-weight: 700; letter-spacing: 0.01em; }
-.marque span { display: block; font-size: 8.5pt; color: #8290b4; }
-.couverture .titre { position: absolute; left: 22mm; right: 22mm; top: 92mm; }
-.kicker { font-size: 10.5pt; font-weight: 600; color: var(--teal); }
-.couverture h1 { font-size: 36pt; font-weight: 700; margin-top: 4mm; color: #fff; letter-spacing: -0.02em; }
-.couverture .secteur { margin-top: 3mm; font-size: 12pt; color: #b2bedc; }
-.spectre { display: flex; height: 3mm; margin-top: 13mm; border-radius: 1.5mm; overflow: hidden; background: #26355c; }
+.couverture { page: couverture; height: 297mm; background: #fff; position: relative; padding: 22mm 22mm 0; }
+.couverture .logo { height: 16mm; width: auto; }
+.couverture .titre { position: absolute; left: 22mm; right: 22mm; top: 88mm; }
+.kicker { font-size: 10.5pt; font-weight: 600; color: var(--cyan); }
+.couverture .filet { width: 16mm; height: 1.2mm; background: var(--cyan); margin-bottom: 6mm; }
+.couverture h1 { font-size: 38pt; font-weight: 700; margin-top: 7mm; color: var(--accent); letter-spacing: -0.02em; }
+.spectre { display: flex; height: 3mm; margin-top: 14mm; border-radius: 1.5mm; overflow: hidden; background: var(--line-soft); }
 .spectre span { display: block; height: 100%; }
-.legende-spectre { margin-top: 3.5mm; font-size: 8pt; color: #b2bedc; }
+.legende-spectre { margin-top: 3.5mm; font-size: 8pt; color: var(--ink-2); }
 .legende-spectre span { margin-right: 5mm; white-space: nowrap; }
 .legende-spectre i { display: inline-block; width: 2mm; height: 2mm; border-radius: 50%; margin-right: 1.4mm; vertical-align: 0.2mm; }
-.couverture .couv-meta { position: absolute; left: 22mm; right: 22mm; bottom: 22mm; border-top: 0.3mm solid #26355c; padding-top: 7mm; }
+.couverture .couv-meta { position: absolute; left: 0; right: 0; bottom: 0; background: var(--navy); color: #e9eefc; padding: 11mm 22mm 14mm; border-top: 1.4mm solid var(--cyan); }
 .couverture .couv-meta table { width: 100%; border-collapse: collapse; }
 .couverture .couv-meta td { vertical-align: top; padding: 0 6mm 4.5mm 0; width: 50%; }
-.couverture .couv-meta .k { font-size: 7.5pt; color: #8290b4; }
+.couverture .couv-meta .k { font-size: 7.5pt; color: #9aa6d6; }
 .couverture .couv-meta .v { font-size: 9.5pt; color: #e9eefc; margin-top: 0.8mm; }
 
 /* ------------------------------------------------------------------ synthèse et sommaire */
@@ -100,17 +95,18 @@ h4 { bookmark-level: none; }
 .fiche { break-before: page; }
 .seule .fiche { break-before: auto; }
 .entete-seule { display: table; width: 100%; padding-bottom: 4mm; margin-bottom: 7mm; border-bottom: 0.25mm solid var(--line); }
-.entete-seule .marque b { font-size: 10.5pt; } .entete-seule .marque span { font-size: 7.5pt; color: var(--ink-3); }
-.entete-seule .marque svg { width: 8.5mm; height: 8.5mm; }
+.entete-seule .logo { height: 11mm; width: auto; display: block; }
 .entete-seule > .gauche, .entete-seule > .droite { display: table-cell; vertical-align: middle; }
-.entete-seule .droite { text-align: right; font-size: 8pt; color: var(--ink-3); }
-.entete-seule .droite b { display: block; color: var(--ink); font-size: 10pt; }
+.entete-seule .droite { text-align: right; font-size: 7.5pt; color: var(--ink-3); }
+.entete-seule .droite b { display: block; color: var(--accent); font-size: 12pt; font-weight: 700; }
 
-.fiche-tete { string-set: code attr(data-code); }
+.fiche-tete { string-set: code "  ·  " attr(data-code); padding-top: 2mm; }
+.fiche-titre { font-size: 9.5pt; font-weight: 700; color: var(--cyan); margin-bottom: 2.5mm; }
+.fiche-titre::before { content: ""; display: inline-block; width: 7mm; height: 0.9mm; background: var(--cyan); vertical-align: 0.8mm; margin-right: 2.5mm; }
 .fiche-tete .ligne { display: flex; align-items: center; gap: 3mm; font-size: 8.5pt; color: var(--ink-3); }
 .puce-code { font-family: "Mono", monospace; font-size: 9pt; font-weight: 600; color: var(--ink); background: var(--panel); border: 0.25mm solid var(--line); border-radius: 1.5mm; padding: 0.5mm 2mm; }
 .fiche h2 { font-size: 17pt; font-weight: 700; letter-spacing: -0.015em; margin: 3mm 0 5mm; bookmark-level: 1; bookmark-label: attr(data-signet); }
-.libre { font-size: 7.5pt; color: var(--accent); background: #eef1fd; border-radius: 3mm; padding: 0.3mm 2mm; }
+.libre { font-size: 7.5pt; color: var(--accent); background: #eceefa; border-radius: 3mm; padding: 0.3mm 2mm; }
 
 .meta { width: 100%; border-collapse: collapse; border: 0.25mm solid var(--line); border-radius: 2mm; margin-bottom: 6mm; }
 .meta td { width: 25%; padding: 2.4mm 3.2mm; vertical-align: top; border-right: 0.25mm solid var(--line-soft); }
@@ -125,11 +121,16 @@ h4 { bookmark-level: none; }
 .rubrique > h3 small { float: right; white-space: nowrap; padding-top: 0.8mm; font-size: 7.5pt; font-weight: 500; color: var(--ink-3); }
 .logique { background: var(--panel); border-left: 0.9mm solid var(--accent); border-radius: 0 2mm 2mm 0; padding: 3mm 4mm; font-size: 9.2pt; }
 .trio { width: 100%; border-collapse: separate; border-spacing: 0; }
-.conseil { padding: 2.6mm 3.5mm; border-radius: 2mm; border: 0.25mm solid var(--line-soft); margin-bottom: 2.5mm; break-inside: avoid; }
-.conseil h4 { font-size: 8.5pt; margin-bottom: 1mm; }
-.conseil.exclusions { background: #fbf8ef; border-color: #efe3c1; } .conseil.exclusions h4 { color: #8a6400; }
-.conseil.recommandation { background: #f1fbf6; border-color: #cdebdc; } .conseil.recommandation h4 { color: #12865a; }
-.conseil.impact { background: #fdf3f4; border-color: #f2d2d6; } .conseil.impact h4 { color: #b8202f; }
+/* Impact, recommandation, exclusions : libellé à gauche, texte à droite, à la suite de la logique */
+.conseils { width: 100%; border-collapse: collapse; margin-top: 3.5mm; }
+.conseils tr { break-inside: avoid; }
+.conseils th { width: 37mm; white-space: nowrap; text-align: left; vertical-align: top; font-size: 8.4pt; font-weight: 600; padding: 2.4mm 3mm 2.4mm 0; }
+.conseils td { vertical-align: top; padding: 2.4mm 0; }
+.conseils tr + tr th, .conseils tr + tr td { border-top: 0.25mm solid var(--line-soft); }
+.conseils th i { display: inline-block; width: 1.1mm; height: 3.4mm; border-radius: 0.5mm; margin-right: 2.2mm; vertical-align: -0.6mm; }
+.conseils .impact th { color: #b8202f; } .conseils .impact i { background: #d6283c; }
+.conseils .recommandation th { color: #12865a; } .conseils .recommandation i { background: #12865a; }
+.conseils .exclusions th { color: #8a6400; } .conseils .exclusions i { background: #c99a06; }
 
 table.donnees { width: 100%; border-collapse: collapse; font-size: 8.4pt; }
 table.donnees th { text-align: left; font-size: 7.3pt; font-weight: 600; color: var(--ink-3); padding: 1.2mm 2.5mm 1.2mm 0; border-bottom: 0.25mm solid var(--line); }
@@ -140,10 +141,22 @@ table.donnees tr { break-inside: avoid; }
 .e-reussi { background: #e3f5ec; color: #12865a; } .e-echoue { background: #fde6e8; color: #b8202f; }
 
 .puces { display: flex; flex-wrap: wrap; gap: 1.6mm; }
-.puce { font-size: 8pt; background: var(--panel); border: 0.25mm solid var(--line-soft); border-radius: 1.5mm; padding: 0.4mm 2mm; }
-.puce b { font-weight: 600; }
+/* Paramètres : une couleur par paramètre (nom en couleur, valeur en gras) */
+.puce { font-size: 8pt; border: 0.25mm solid; border-left-width: 1mm; border-radius: 1.5mm; padding: 0.5mm 2.2mm; color: var(--ink-2); }
+.puce em { font-style: normal; font-weight: 600; }
+.puce b { font-weight: 700; color: var(--ink); }
+/* Valeurs des paramètres dans le code des règles : même couleur que leur pastille */
+pre .pv { font-weight: 700; border-radius: 0.6mm; }
+pre .pv-manquant { font-weight: 700; color: #b8202f; background: #fde6e8; border-radius: 0.6mm; }
+.liste-nom { font-weight: 600; }
+.p-1 { background: #e8f6fb; border-color: #bfe6f3; border-left-color: #1aa3cc; } .p-1 em, .p-1.pv, .p-1.liste-nom { color: #0b7fa3; }
+.p-2 { background: #f1ecfd; border-color: #dccff8; border-left-color: #7447d6; } .p-2 em, .p-2.pv, .p-2.liste-nom { color: #5b2fc0; }
+.p-3 { background: #e7f6ef; border-color: #c3e8d6; border-left-color: #12865a; } .p-3 em, .p-3.pv, .p-3.liste-nom { color: #0e6d49; }
+.p-4 { background: #fdf1e6; border-color: #f6d5b9; border-left-color: #cc5a0a; } .p-4 em, .p-4.pv, .p-4.liste-nom { color: #a84a08; }
+.p-5 { background: #e9f1fc; border-color: #c7dcf4; border-left-color: #1f6fc4; } .p-5 em, .p-5.pv, .p-5.liste-nom { color: #1a5ea8; }
+.p-6 { background: #fbeaf1; border-color: #f1c9db; border-left-color: #c2397a; } .p-6 em, .p-6.pv, .p-6.liste-nom { color: #a32c63; }
 
-.regle { margin-bottom: 4mm; }
+.regle { margin-bottom: 4.5mm; break-inside: avoid; }
 .regle-tete { display: flex; justify-content: space-between; align-items: baseline; background: var(--navy-2); color: #e9eefc; padding: 1.8mm 3.5mm; border-radius: 2mm 2mm 0 0; font-size: 8.5pt; font-weight: 600; break-after: avoid; }
 .regle-tete small { color: #8fa0c8; font-weight: 400; font-size: 7.5pt; }
 pre { margin: 0; background: #f6f8fd; border: 0.25mm solid var(--line); border-top: none; border-radius: 0 0 2mm 2mm; padding: 3mm 3.5mm;
@@ -151,7 +164,7 @@ pre { margin: 0; background: #f6f8fd; border: 0.25mm solid var(--line); border-t
 .alerte { font-size: 7.8pt; color: #9a5c00; margin-top: 1.2mm; }
 .note-regle { font-size: 7.8pt; color: var(--ink-2); margin-top: 1.2mm; }
 .absentes { font-size: 8pt; color: var(--ink-3); background: var(--panel); border-radius: 2mm; padding: 2mm 3.5mm; }
-.hunt-titre { font-size: 9pt; font-weight: 600; margin-bottom: 0.8mm; }
+.hunt-titre { font-size: 9pt; font-weight: 600; margin-bottom: 0.8mm; break-after: avoid; }
 .hunt-meta { font-size: 7.8pt; color: var(--ink-3); margin-bottom: 1.6mm; }
 .vide-doc { text-align: center; color: var(--ink-3); padding: 30mm 0; font-size: 11pt; }
 </style>
@@ -162,14 +175,11 @@ pre { margin: 0; background: #f6f8fd; border: 0.25mm solid var(--line); border-t
 {% if not seule %}
 <!-- ================================================================ couverture -->
 <section class="couverture">
-  <div class="marque">
-    <svg viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#16213d"/><path d="M16 5 6 9v7c0 6 4 9.5 10 11 6-1.5 10-5 10-11V9z" fill="none" stroke="#2dd4bf" stroke-width="2.2"/><path d="m11.5 16 3 3 6-6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <div><b>SOC UCF</b><span>UC Factory</span></div>
-  </div>
+  <img class="logo" src="{{ assets }}/logo.svg" alt="Tunisian Financial Cert">
   <div class="titre">
+    <div class="filet"></div>
     <div class="kicker">Catalogue de détections</div>
     <h1>{{ client.nom }}</h1>
-    {% if client.secteur %}<div class="secteur">{{ client.secteur }}</div>{% endif %}
     <div class="spectre">{% for st in s.par_statut %}{% if st.n %}<span style="width: {{ st.pct|stringformat:'s' }}%; background: {{ st.couleur }}"></span>{% endif %}{% endfor %}</div>
     <div class="legende-spectre">{% for st in s.par_statut %}<span><i style="background: {{ st.couleur }}"></i>{{ st.label }} {{ st.n }}</span>{% endfor %}</div>
   </div>
@@ -184,8 +194,7 @@ pre { margin: 0; background: #f6f8fd; border: 0.25mm solid var(--line); border-t
         <td><div class="k">Contenu</div><div class="v">{% if technique %}Fiches, règles et requêtes de hunting{% else %}Fiches (sans règles ni hunting){% endif %}</div></td>
       </tr>
       <tr>
-        <td><div class="k">Généré le</div><div class="v">{{ genere_le|date:"j F Y à H:i" }}</div></td>
-        <td>{% if auteur %}<div class="k">Par</div><div class="v">{{ auteur }}</div>{% endif %}</td>
+        <td colspan="2"><div class="k">Date</div><div class="v">{{ genere_le|date:"j F Y" }}</div></td>
       </tr>
     </table>
   </div>
@@ -258,11 +267,8 @@ pre { margin: 0; background: #f6f8fd; border: 0.25mm solid var(--line); border-t
 {% else %}
 <!-- ================================================================ en-tête (fiche seule) -->
 <div class="entete-seule">
-  <div class="gauche"><div class="marque">
-    <svg viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#0e1627"/><path d="M16 5 6 9v7c0 6 4 9.5 10 11 6-1.5 10-5 10-11V9z" fill="none" stroke="#2dd4bf" stroke-width="2.2"/><path d="m11.5 16 3 3 6-6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <div><b>SOC UCF</b><span>Fiche de détection</span></div>
-  </div></div>
-  <div class="droite"><b>{{ client.nom }}</b>{% if client.secteur %}{{ client.secteur }}{% endif %}</div>
+  <div class="gauche"><img class="logo" src="{{ assets }}/logo.svg" alt="Tunisian Financial Cert"></div>
+  <div class="droite"><b>{{ client.nom }}</b></div>
 </div>
 {% endif %}
 {% endwith %}
@@ -271,6 +277,7 @@ pre { margin: 0; background: #f6f8fd; border: 0.25mm solid var(--line); border-t
 {% for f in fiches %}{% with d=f.obj %}
 <article class="fiche" id="{{ f.anchor }}">
   <header class="fiche-tete" data-code="{{ d.code }}">
+    <div class="fiche-titre">Fiche de détection</div>
     <div class="ligne">
       <span class="puce-code">{{ d.code }}</span>
       <span>{{ d.domaine.nom }}</span>
@@ -286,24 +293,19 @@ pre { margin: 0; background: #f6f8fd; border: 0.25mm solid var(--line); border-t
       <td><div class="k">Statut</div><div class="v"><span class="statut" style="color: {{ f.statut_couleur }}; background: {{ f.statut_couleur }}1a">{{ d.get_statut_display }}</span></div></td>
       <td><div class="k">Journalisation</div><div class="v"><span class="etiquette {% if d.journalisation == 'ok' %}e-collectee{% else %}e-echoue{% endif %}">{{ d.get_journalisation_display }}</span></div></td>
     </tr>
-    <tr>
-      <td><div class="k">Déployée le</div><div class="v{% if not d.date_deploiement %} vide{% endif %}">{{ d.date_deploiement|date:"d/m/Y"|default:"—" }}</div></td>
-      <td><div class="k">Référence dans le SIEM</div><div class="v mono{% if not d.reference_siem %} vide{% endif %}" style="font-size: 8pt">{{ d.reference_siem|default:"—" }}</div></td>
-      <td><div class="k">Template d'origine</div><div class="v mono{% if not d.template %} vide{% endif %}" style="font-size: 8pt">{{ d.template.code|default:"—" }}</div></td>
-      <td><div class="k">Dernière modification</div><div class="v{% if not d.modifie_le %} vide{% endif %}">{% if d.modifie_le %}{{ d.modifie_le|date:"d/m/Y" }}{% if d.modifie_par %} <span class="muted" style="font-weight: 400">· {{ d.modifie_par.get_full_name|default:d.modifie_par.username }}</span>{% endif %}{% else %}—{% endif %}</div></td>
-    </tr>
   </table>
 
-  {% if d.logique %}
-  <section class="rubrique"><h3>Logique de la règle</h3><div class="logique texte">{{ d.logique }}</div></section>
-  {% endif %}
-
-  {% if d.exclusions or d.recommandation or d.impact %}
+  {% if d.logique or d.impact or d.recommandation or d.exclusions %}
   <section class="rubrique">
-    <h3>Traitement de l'alerte</h3>
-    {% if d.impact %}<div class="conseil impact"><h4>Impact</h4><div class="texte">{{ d.impact }}</div></div>{% endif %}
-    {% if d.recommandation %}<div class="conseil recommandation"><h4>Recommandation</h4><div class="texte">{{ d.recommandation }}</div></div>{% endif %}
-    {% if d.exclusions %}<div class="conseil exclusions"><h4>Exclusions</h4><div class="texte">{{ d.exclusions }}</div></div>{% endif %}
+    <h3>Logique de la règle</h3>
+    {% if d.logique %}<div class="logique texte">{{ d.logique }}</div>{% endif %}
+    {% if d.impact or d.recommandation or d.exclusions %}
+    <table class="conseils">
+      {% if d.impact %}<tr class="impact"><th><i></i>Impact</th><td class="texte">{{ d.impact }}</td></tr>{% endif %}
+      {% if d.recommandation %}<tr class="recommandation"><th><i></i>Recommandation</th><td class="texte">{{ d.recommandation }}</td></tr>{% endif %}
+      {% if d.exclusions %}<tr class="exclusions"><th><i></i>Exclusions</th><td class="texte">{{ d.exclusions }}</td></tr>{% endif %}
+    </table>
+    {% endif %}
   </section>
   {% endif %}
 
@@ -317,24 +319,11 @@ pre { margin: 0; background: #f6f8fd; border: 0.25mm solid var(--line); border-t
   </section>
   {% endif %}
 
-  {% if d.logs_a_collecter or f.sources %}
-  <section class="rubrique">
-    <h3>Journalisation et sources</h3>
-    {% if d.logs_a_collecter %}<p class="texte" style="margin-bottom: 2.5mm">{{ d.logs_a_collecter }}</p>{% endif %}
-    {% if f.sources %}
-    <table class="donnees">
-      <thead><tr><th>Source de logs</th><th style="width: 22mm">Requise</th><th style="width: 30mm">Chez le client</th></tr></thead>
-      <tbody>{% for src in f.sources %}<tr><td>{{ src.nom }}</td><td>{% if src.obligatoire %}Oui{% else %}<span class="muted">Utile</span>{% endif %}</td><td><span class="etiquette e-{{ src.statut }}">{{ src.statut_label }}</span></td></tr>{% endfor %}</tbody>
-    </table>
-    {% endif %}
-  </section>
-  {% endif %}
-
   {% if f.parametres or f.listes or d.detections_similaires %}
   <section class="rubrique">
     <h3>Paramètres et références</h3>
-    {% if f.parametres %}<div class="puces" style="margin-bottom: 2mm">{% for p in f.parametres %}<span class="puce mono">{{ p.nom }} = <b>{{ p.valeur }}</b></span>{% endfor %}</div>{% endif %}
-    {% if f.listes %}<table class="donnees" style="margin-bottom: 2mm"><thead><tr><th style="width: 40mm">Liste de référence</th><th>Valeurs</th></tr></thead><tbody>{% for l in f.listes %}<tr><td class="mono">{{ l.nom }}</td><td>{{ l.valeurs|default:"—" }}</td></tr>{% endfor %}</tbody></table>{% endif %}
+    {% if f.parametres %}<div class="puces" style="margin-bottom: 2mm">{% for p in f.parametres %}<span class="puce mono {{ p.couleur }}"><em>{{ p.nom }}</em> = <b>{{ p.valeur }}</b></span>{% endfor %}</div>{% endif %}
+    {% if f.listes %}<table class="donnees" style="margin-bottom: 2mm"><thead><tr><th style="width: 40mm">Liste de référence</th><th>Valeurs</th></tr></thead><tbody>{% for l in f.listes %}<tr><td class="mono"><span class="liste-nom {{ l.couleur }}">{{ l.nom }}</span></td><td>{{ l.valeurs|default:"—" }}</td></tr>{% endfor %}</tbody></table>{% endif %}
     {% if d.detections_similaires %}<p><span class="muted">Détections similaires :</span> {{ d.detections_similaires }}</p>{% endif %}
   </section>
   {% endif %}

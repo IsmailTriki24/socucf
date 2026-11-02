@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Radar } from "lucide-react";
+import { BrandLockup } from "@/components/domain/Brand";
 import { post } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { errMsg } from "@/lib/hooks";
@@ -30,7 +30,7 @@ export default function Login() {
   return (
     <div className="grid min-h-screen lg:grid-cols-[1.1fr_1fr]">
       <div className="relative hidden flex-col justify-between overflow-hidden border-r border-line-soft bg-bg-2 p-12 lg:flex">
-        <div className="flex items-center gap-2.5"><span className="grid size-9 place-items-center rounded-lg bg-accent text-accent-ink"><Radar className="size-5" strokeWidth={2.4} /></span><span className="text-lg font-bold">SOC UCF</span></div>
+        <div className="flex items-center"><BrandLockup height={42} /></div>
         <div>
           <div className="mx-auto max-w-2xl text-center">
             <h1 className="text-balance text-[clamp(40px,3.3vw,52px)] leading-[1.05]">Chaque détection du client, de l&apos;idée au déploiement.</h1>

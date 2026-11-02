@@ -468,7 +468,7 @@ def client_export(request, client_id, fmt):
     elif fmt == "pdf":
         statuts = pdf.parse_statuts(request.query_params.get("statuts"))
         ids = pdf.parse_ids(request.query_params.get("ids"))
-        data = pdf.detections_pdf(c, statuts=statuts, ids=ids, technique=request.query_params.get("technique") != "0", auteur=request.user)
+        data = pdf.detections_pdf(c, statuts=statuts, ids=ids, technique=request.query_params.get("technique") != "0")
         resp = HttpResponse(data, content_type="application/pdf")
         resp["Content-Disposition"] = f'attachment; filename="detections_{slug}.pdf"'
     elif fmt == "navigator.json":
@@ -484,7 +484,7 @@ def client_export(request, client_id, fmt):
 def detection_export_pdf(request, pk):
     d = get_detection(request.user, pk, "export")
     slug = "".join(ch if ch.isalnum() else "_" for ch in f"{d.code}_{d.client.nom}").strip("_") or "detection"
-    data = pdf.detections_pdf(d.client, seule=d, technique=request.query_params.get("technique") != "0", auteur=request.user)
+    data = pdf.detections_pdf(d.client, seule=d, technique=request.query_params.get("technique") != "0")
     resp = HttpResponse(data, content_type="application/pdf")
     resp["Content-Disposition"] = f'attachment; filename="{slug}.pdf"'
     resp["X-Content-Type-Options"] = "nosniff"

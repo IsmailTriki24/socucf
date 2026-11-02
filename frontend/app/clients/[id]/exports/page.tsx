@@ -39,7 +39,7 @@ export default function Exports({ params }: { params: Promise<{ id: string }> })
             <h2 id="h-pdf" className="text-[18px]">Document PDF</h2>
             <p className="mt-1.5 max-w-2xl text-[13.5px] leading-relaxed text-fg-3">
               Un document prêt à transmettre : page de garde, synthèse (statuts, gravités, domaines), sommaire avec numéros de page, puis une fiche par détection
-              (logique, traitement de l&apos;alerte, ATT&amp;CK, sources de logs, paramètres, règles par plateforme, hunting, tests). Les paramètres {"{{seuil}}"} sont remplacés par les valeurs du client.
+              (logique de la règle avec impact, recommandation et exclusions, ATT&amp;CK, paramètres, règles par plateforme, hunting, tests). Les paramètres {"{{seuil}}"} sont remplacés par les valeurs du client.
             </p>
             <p className="mt-2 text-[13px] text-fg-3">Pour une seule détection, utilisez le bouton PDF de sa page ; pour quelques-unes, sélectionnez-les dans la liste des détections.</p>
           </div>

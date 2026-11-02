@@ -23,6 +23,7 @@ import { useWorkspace } from "@/lib/workspace";
 import { useStored } from "@/lib/hooks";
 import { ROLE_LABELS } from "@/lib/status";
 import { cn } from "@/lib/cn";
+import { BrandLockup, CatHead } from "@/components/domain/Brand";
 import { hue, plural } from "@/lib/format";
 import { Avatar, IconButton, Kbd, Spinner } from "./ui/basics";
 import { Menu, Pop, Tip } from "./ui/overlay";
@@ -172,10 +173,9 @@ export default function Shell({ children }: { children: React.ReactNode }) {
     <div className="flex h-screen overflow-hidden">
       {drawer && <button aria-label="Fermer le menu" className="fixed inset-0 z-30 bg-black/50 lg:hidden" onClick={() => setDrawer(false)} />}
       <nav aria-label="Navigation principale" className={cn("fixed inset-y-0 left-0 z-40 flex shrink-0 flex-col border-r border-line-soft bg-bg-2 transition-[width,transform] duration-150 lg:static lg:translate-x-0", drawer ? "translate-x-0" : "-translate-x-full", rail ? "w-[68px]" : "w-[252px]")}>
-        <div className={cn("flex h-14 items-center gap-2 px-3.5", rail && "justify-center px-0")}>
-          <Link href="/" className="flex items-center gap-2.5" aria-label="SOC UCF, accueil">
-            <span className="grid size-8 place-items-center rounded-lg bg-accent text-accent-ink"><Radar className="size-[18px]" strokeWidth={2.4} /></span>
-            {!rail && <span className="text-[16px] font-bold tracking-tight">SOC UCF</span>}
+        <div className={cn("flex h-16 items-center px-3.5", rail && "justify-center px-0")}>
+          <Link href="/" className="flex items-center" aria-label="Tunisian Financial Cert, accueil">
+            {rail ? <CatHead size={36} blink /> : <BrandLockup height={25} />}
           </Link>
         </div>
         <div className="scroll-thin flex-1 overflow-y-auto px-3 pb-3">

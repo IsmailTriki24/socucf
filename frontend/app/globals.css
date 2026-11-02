@@ -16,6 +16,7 @@
   --shadow-pop: 0 18px 50px -14px rgb(0 0 0 / 0.7), 0 0 0 1px var(--line);
   --code-bg: #070b16;
   --client-h: 224;
+  --brand-ink: #f2f5ff; --brand-cyan: #2bbde6; /* logo du Tunisian Financial Cert, version claire */
 }
 :root[data-theme="light"] {
   color-scheme: light;
@@ -28,6 +29,7 @@
   --ok: #12865a; --warn: #b26a00; --err: #d6283c; --info: #0a86a6;
   --shadow-pop: 0 18px 44px -16px rgb(20 30 70 / 0.35), 0 0 0 1px var(--line);
   --code-bg: #f6f8fd;
+  --brand-ink: #26307a; --brand-cyan: #1aa3cc; /* couleurs d'origine du logo */
 }
 
 @theme inline {
@@ -148,3 +150,8 @@
 @keyframes cc-type { 0% { transform: scaleX(0); } 35%, 100% { transform: scaleX(1); } }
 @keyframes cc-cursor { 50% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .cc *, .cc { animation: none !important; } }
+
+/* Chat cyber (mascotte) : il cligne des yeux de temps en temps */
+.cm-blink .cm-eyes { transform-box: fill-box; transform-origin: center; animation: cm-blink 6.5s infinite; }
+@keyframes cm-blink { 0%, 93%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.12); } 97% { transform: scaleY(1); } }
+@media (prefers-reduced-motion: reduce) { .cm-blink .cm-eyes { animation: none !important; } }
