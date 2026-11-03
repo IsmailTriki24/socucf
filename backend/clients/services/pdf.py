@@ -67,6 +67,14 @@ def _queryset(client):
 
 
 NB_COULEURS_PARAM = 6  # classes .p-1 à .p-6 du gabarit
+LIGNES_BLOC_INSECABLE = 12  # au-delà, un bloc de code peut se poursuivre sur la page suivante
+CARACTERES_PAR_LIGNE = 105  # largeur d'un bloc de code (7,3 pt, A4) avant retour à la ligne
+
+
+def _court(texte: str) -> bool:
+    """Bloc de code assez court pour rester d'un seul tenant (sinon, il laisserait un grand vide en bas de page)."""
+    lignes = sum(1 + len(l) // CARACTERES_PAR_LIGNE for l in (texte or "").splitlines())
+    return lignes <= LIGNES_BLOC_INSECABLE
 
 
 def _code_colore(texte: str, valeurs: dict, couleurs: dict) -> tuple[str, list[str]]:
@@ -104,12 +112,12 @@ def _fiche(d: DetectionClient, siems, tactiques: dict, technique: bool) -> dict:
                 continue
             texte, manquants = _code_colore(s.contenu, valeurs, couleurs)
             regles.append({"siem": siem.nom, "langage": siem.langage_regle, "code": texte, "manquants": manquants,
-                           "champs": s.champs_requis or [], "notes": s.notes})
+                           "champs": s.champs_requis or [], "notes": s.notes, "court": _court(s.contenu)})
         ordre = {s.pk: i for i, s in enumerate(siems)}
         for h in sorted(d.requetehuntings.all(), key=lambda h: (ordre.get(h.siem_id, 99), h.titre)):
             texte, _ = _code_colore(h.requete, valeurs, couleurs)
             hunting.append({"siem": h.siem.nom, "langage": h.siem.langage_hunting, "titre": h.titre, "objectif": h.objectif,
-                            "periode": h.periode_conseillee, "code": texte})
+                            "periode": h.periode_conseillee, "code": texte, "court": _court(h.requete)})
     listes = [
         {"nom": nom, "couleur": couleurs[nom], "valeurs": ", ".join(str(v) for v in (vals if isinstance(vals, (list, tuple)) else [vals]))}
         for nom, vals in (d.listes_reference or {}).items()

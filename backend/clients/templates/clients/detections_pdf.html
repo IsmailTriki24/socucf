@@ -8,9 +8,9 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
 @font-face { font-family: "Grotesk"; src: url("{{ assets }}/fonts/schibsted-grotesk-latin-ext-wght-normal.woff2");
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
-@font-face { font-family: "Mono"; src: url("{{ assets }}/fonts/jetbrains-mono-latin-wght-normal.woff2");
+@font-face { font-family: "JetBrains Mono"; src: url("{{ assets }}/fonts/jetbrains-mono-latin-wght-normal.woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-@font-face { font-family: "Mono"; src: url("{{ assets }}/fonts/jetbrains-mono-latin-ext-wght-normal.woff2");
+@font-face { font-family: "JetBrains Mono"; src: url("{{ assets }}/fonts/jetbrains-mono-latin-ext-wght-normal.woff2");
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
 
 /* Couleurs du Tunisian Financial Cert : marine #26307a, cyan #1aa3cc */
@@ -33,7 +33,7 @@ html { font-family: "Grotesk", "DejaVu Sans", sans-serif; font-size: 9pt; line-h
 body { margin: 0; }
 h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; }
 p { margin: 0; }
-.mono, code, pre { font-family: "Mono", "DejaVu Sans Mono", monospace; }
+.mono, code, pre { font-family: "JetBrains Mono", "DejaVu Sans Mono", monospace; font-variant-ligatures: none; font-feature-settings: "calt" 0, "liga" 0; }  /* pas de ligatures : le code doit pouvoir être recopié tel quel */
 .muted { color: var(--ink-3); }
 .texte { white-space: pre-line; overflow-wrap: break-word; }
 
@@ -79,9 +79,9 @@ h4 { bookmark-level: none; }
 .deux-col > tbody > tr > td:last-child { padding-left: 6mm; }
 
 .sommaire { break-before: page; }
-.sommaire h3 { font-size: 10pt; margin: 6mm 0 1.5mm; padding-bottom: 1.5mm; border-bottom: 0.4mm solid var(--ink); break-after: avoid; bookmark-level: none; }
+.sommaire h3 { font-size: 10pt; margin: 5mm 0 1.2mm; padding-bottom: 1.5mm; border-bottom: 0.4mm solid var(--ink); break-after: avoid; bookmark-level: none; }
 .sommaire h3 span { float: right; white-space: nowrap; font-weight: 500; color: var(--ink-3); font-size: 8.5pt; padding-top: 0.6mm; }
-.entree { display: block; color: inherit; text-decoration: none; padding: 1.3mm 0; border-bottom: 0.2mm solid var(--line-soft); break-inside: avoid; }
+.entree { display: block; color: inherit; text-decoration: none; padding: 1mm 0; border-bottom: 0.2mm solid var(--line-soft); break-inside: avoid; }
 .entree .code { display: inline-block; width: 19mm; font-size: 8pt; color: var(--ink-2); }
 .entree .cas { }
 .entree .etat { float: right; margin-left: 4mm; }
@@ -104,7 +104,7 @@ h4 { bookmark-level: none; }
 .fiche-titre { font-size: 9.5pt; font-weight: 700; color: var(--cyan); margin-bottom: 2.5mm; }
 .fiche-titre::before { content: ""; display: inline-block; width: 7mm; height: 0.9mm; background: var(--cyan); vertical-align: 0.8mm; margin-right: 2.5mm; }
 .fiche-tete .ligne { display: flex; align-items: center; gap: 3mm; font-size: 8.5pt; color: var(--ink-3); }
-.puce-code { font-family: "Mono", monospace; font-size: 9pt; font-weight: 600; color: var(--ink); background: var(--panel); border: 0.25mm solid var(--line); border-radius: 1.5mm; padding: 0.5mm 2mm; }
+.puce-code { font-family: "JetBrains Mono", monospace; font-feature-settings: "calt" 0, "liga" 0; font-size: 9pt; font-weight: 600; color: var(--ink); background: var(--panel); border: 0.25mm solid var(--line); border-radius: 1.5mm; padding: 0.5mm 2mm; }
 .fiche h2 { font-size: 17pt; font-weight: 700; letter-spacing: -0.015em; margin: 3mm 0 5mm; bookmark-level: 1; bookmark-label: attr(data-signet); }
 .libre { font-size: 7.5pt; color: var(--accent); background: #eceefa; border-radius: 3mm; padding: 0.3mm 2mm; }
 
@@ -156,16 +156,20 @@ pre .pv-manquant { font-weight: 700; color: #b8202f; background: #fde6e8; border
 .p-5 { background: #e9f1fc; border-color: #c7dcf4; border-left-color: #1f6fc4; } .p-5 em, .p-5.pv, .p-5.liste-nom { color: #1a5ea8; }
 .p-6 { background: #fbeaf1; border-color: #f1c9db; border-left-color: #c2397a; } .p-6 em, .p-6.pv, .p-6.liste-nom { color: #a32c63; }
 
-.regle { margin-bottom: 4.5mm; break-inside: avoid; }
+/* Un bloc court reste d'un seul tenant ; un bloc long se poursuit sur la page suivante plutôt que d'y être reporté en entier */
+.regle { margin-bottom: 4.5mm; }
+.regle.court { break-inside: avoid; }
+.regle .note-regle, .regle .alerte { break-before: avoid; }
 .regle-tete { display: flex; justify-content: space-between; align-items: baseline; background: var(--navy-2); color: #e9eefc; padding: 1.8mm 3.5mm; border-radius: 2mm 2mm 0 0; font-size: 8.5pt; font-weight: 600; break-after: avoid; }
 .regle-tete small { color: #8fa0c8; font-weight: 400; font-size: 7.5pt; }
 pre { margin: 0; background: #f6f8fd; border: 0.25mm solid var(--line); border-top: none; border-radius: 0 0 2mm 2mm; padding: 3mm 3.5mm;
-  font-size: 7.3pt; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; color: #1b2550; orphans: 3; widows: 3; }
+  font-size: 7.3pt; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; color: #1b2550; orphans: 4; widows: 4;
+  box-decoration-break: clone; }  /* un bloc coupé garde son cadre sur chaque page */
 .alerte { font-size: 7.8pt; color: #9a5c00; margin-top: 1.2mm; }
 .note-regle { font-size: 7.8pt; color: var(--ink-2); margin-top: 1.2mm; }
 .absentes { font-size: 8pt; color: var(--ink-3); background: var(--panel); border-radius: 2mm; padding: 2mm 3.5mm; }
 .hunt-titre { font-size: 9pt; font-weight: 600; margin-bottom: 0.8mm; break-after: avoid; }
-.hunt-meta { font-size: 7.8pt; color: var(--ink-3); margin-bottom: 1.6mm; }
+.hunt-meta { font-size: 7.8pt; color: var(--ink-3); margin-bottom: 1.6mm; break-after: avoid; }
 .vide-doc { text-align: center; color: var(--ink-3); padding: 30mm 0; font-size: 11pt; }
 </style>
 </head>
@@ -332,7 +336,7 @@ pre { margin: 0; background: #f6f8fd; border: 0.25mm solid var(--line); border-t
   <section class="rubrique">
     <h3>Règles <small>{{ f.regles|length }} / {{ siems|length }} plateforme{{ siems|length|pluralize }}</small></h3>
     {% for r in f.regles %}
-    <div class="regle">
+    <div class="regle{% if r.court %} court{% endif %}">
       <div class="regle-tete"><span>{{ r.siem }}</span><small>{{ r.langage }}</small></div>
       <pre>{{ r.code }}</pre>
       {% if r.manquants %}<p class="alerte">Paramètres sans valeur : {{ r.manquants|join:", " }}</p>{% endif %}
@@ -347,7 +351,7 @@ pre { margin: 0; background: #f6f8fd; border: 0.25mm solid var(--line); border-t
   <section class="rubrique">
     <h3>Requêtes de hunting <small>{{ f.hunting|length }}</small></h3>
     {% for h in f.hunting %}
-    <div class="regle">
+    <div class="regle{% if h.court %} court{% endif %}">
       <p class="hunt-titre">{{ h.titre }}</p>
       {% if h.objectif or h.periode %}<p class="hunt-meta">{{ h.objectif }}{% if h.objectif and h.periode %} · {% endif %}{% if h.periode %}Période conseillée : {{ h.periode }}{% endif %}</p>{% endif %}
       <div class="regle-tete"><span>{{ h.siem }}</span><small>{{ h.langage }}</small></div>
